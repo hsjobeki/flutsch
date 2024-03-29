@@ -26,7 +26,13 @@ std::ostream &operator<<(std::ostream &os, const AttrEntry &e) {
     } else {
         os << e.name.value_or("<unnamed>");
     }
-    os << " @ " << e.value << ")";
+    std::stringstream ss;
+
+    // Format the size_t value as a hexadecimal string
+    ss << std::hex << AttrEntryHash()(e) ;
+    std::string hexStr = ss.str(); // Extract the formatted string
+
+    os << " @ 0x" << hexStr << ")" << " - " << e.bindPos.value();
     return os;
 }
 
@@ -48,7 +54,6 @@ std::ostream &operator<<(std::ostream &os, const ValueIntrospection &e) {
     }
     return os;
 }
-
 
 }
 

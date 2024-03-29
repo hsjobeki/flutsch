@@ -58,12 +58,11 @@ using namespace nlohmann;
 #pragma clang diagnostic ignored "-Wnon-virtual-dtor"
 #endif
 
-
 namespace flutsch {
 
-typedef std::unordered_map<AttrEntry, ValueIntrospection, AttrEntryHash> FlutschMap;
+typedef std::unordered_map<AttrEntry, ValueIntrospection, AttrEntryHash>
+    FlutschMap;
 static FlutschMap valueMap;
-
 
 std::string attrPathJoin(std::vector<std::string> path) {
     return std::accumulate(path.begin(), path.end(), std::string(),
@@ -107,27 +106,27 @@ std::vector<std::string> attrPathToPath(std::vector<AttrEntry> path) {
     return result;
 }
 
-static std::string errorToString(nix::Error *error) {
+static std::pair<std::string,std::optional<std::string>> errorInfo(nix::Error *error) {
     if (nullptr != dynamic_cast<nix::RestrictedPathError *>(error)) {
-        return std::string("RestrictedPathError " + error->msg());
+        return {std::string("RestrictedPathError"), error->msg()};
     } else if (nullptr != dynamic_cast<nix::MissingArgumentError *>(error)) {
-        return std::string("MissingArgumentError");
+        return {std::string("MissingArgumentError"),{}};
     } else if (nullptr != dynamic_cast<nix::UndefinedVarError *>(error)) {
-        return std::string("UndefinedVarError");
+        return {std::string("UndefinedVarError"),{}};
     } else if (nullptr != dynamic_cast<nix::TypeError *>(error)) {
-        return std::string("TypeError");
+        return {std::string("TypeError"),{}};
     } else if (nullptr != dynamic_cast<nix::Abort *>(error)) {
-        return std::string("Abort");
+        return {std::string("Abort"),{}};
     } else if (nullptr != dynamic_cast<nix::ThrownError *>(error)) {
-        return std::string("Throw '" + error->info().msg.str() + "' ");
+        return {std::string("Throw"), error->info().msg.str()};
     } else if (nullptr != dynamic_cast<nix::AssertionError *>(error)) {
-        return std::string("AssertionError");
+        return {std::string("AssertionError"),{}};
     } else if (nullptr != dynamic_cast<nix::ParseError *>(error)) {
-        return std::string("ParseError");
+        return {std::string("ParseError"),{}};
     } else if (nullptr != dynamic_cast<nix::EvalError *>(error)) {
-        return std::string("EvalError");
+        return {std::string("EvalError"),{}};
     } else {
-        return std::string("Error");
+        return {std::string("Error"),{}};
     }
 }
 
@@ -142,7 +141,9 @@ void displaySet(const std::set<std::vector<AttrEntry>> &s) {
     // Printing the elements of
     // the set
     for (auto itr : s) {
-        // std::cout << itr << " ";
+        for (auto e : itr) {
+            std::cout << e << " ";
+        }
     }
 }
 
@@ -173,8 +174,7 @@ void displayLambda(nix::Value *lambda, ref<EvalState> state) {
     std::cout << ">" << std::endl;
 }
 
-void displayValueMap(
-    const FlutschMap &s) {
+void displayValueMap(const FlutschMap &s) {
     std::vector<std::pair<const AttrEntry &, const ValueIntrospection &>> list(
         s.begin(), s.end());
 
@@ -220,6 +220,36 @@ std::optional<Pos> getPos(ref<EvalState> state, PosIdx &posIdx) {
     return {};
 }
 
+json posToJson(std::optional<Pos> pos) {
+    if (!pos.has_value()) {
+        json j_null;
+        return j_null;
+    }
+    auto source = std::optional<std::string>({});
+    if (auto path = std::get_if<SourcePath>(&pos.value().origin)) {
+        source = path->path.c_str();
+    }
+    return json::object({{"column", pos.value().column},
+                         {"line", pos.value().line},
+                         {"file", source}});
+}
+
+json attrEntryToJson(const AttrEntry& entry) {
+    return json::object({
+        {"name", entry.name},
+        {"pos", posToJson(entry.bindPos)},
+        {"is_root", entry.isRoot}
+    });
+}
+
+json childrenToJson(std::unordered_map<std::string, const AttrEntry>& children) {
+    json list = json::array({});
+    for (auto child : children) {
+        list.push_back(attrEntryToJson(child.second));
+    }
+    return list;
+}
+
 void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     std::cout << "positionsEval" << std::endl;
 
@@ -245,8 +275,6 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     if (vRoot->type() != nAttrs) {
         throw EvalError("Top level attribute is not an attrset");
     }
-    // create an empty list []
-    json out = json::array({});
 
     // Add a single entry from nixValue
     const auto introspectValue = [&](std::vector<AttrEntry> attrPath,
@@ -264,15 +292,29 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
 
             if (test->type() == nAttrs) {
                 state->forceAttrs(*test, noPos, "error");
-                std::cout << "Got: ";
+
                 displayAttrs(test, state);
                 posIdx = test->attrs->pos;
                 type = std::string("attrset");
+                // If the value is an attrset, add all its attributes as children
+                for (auto &i : test->attrs->lexicographicOrder(state->symbols)) {
+                    const std::string &name = state->symbols[i->name];
+
+                    if (data != valueMap.end()) {
+                        if (auto p = getPos(state, posIdx)) {
+                            const auto attrEntry = AttrEntry(i->value, name, *p);
+                            data->second.children.emplace(name,attrEntry);
+                        }else{
+                            const auto attrEntry = AttrEntry(i->value, name, {});
+                            data->second.children.emplace(name,attrEntry);
+                        }
+                    }
+                }
             }
 
             if (test->isLambda()) {
                 state->forceFunction(*test, noPos, "error");
-                std::cout << "Got: ";
+
                 displayLambda(test, state);
                 posIdx = test->lambda.fun->getPos();
                 type = std::string("lambda");
@@ -288,15 +330,19 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
             }
 
         } catch (nix::Error &e) {
-            std::cout << "errPos: " << e.info().errPos << std::endl;
             if (data != valueMap.end()) {
+                data->second.isError = true;
+
                 auto pos = e.info().errPos;
-                std::cout << "inserting into: " << data->first << std::endl;
-                data->second.valueType = errorToString(&e);
+
+                std::cout << "inserting error: " << data->first << std::endl;
                 bool hasPos = pos && *pos;
                 if (hasPos) {
                     data->second.valuePos.emplace(*pos);
                 }
+                auto errorPair = errorInfo(&e);
+                data->second.valueType = errorPair.first;
+                data->second.errorDescription = errorPair.second;
             }
         }
         // Finally
@@ -310,7 +356,6 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     std::function<void(std::vector<AttrEntry>, nix::Value *)> recurseValues;
     recurseValues = [&](std::vector<AttrEntry> attrPath,
                         nix::Value *testAttrs) -> void {
-        // std::cout << "recursing: " << attrPathJoin(attrPath) << std::endl;
 
         for (auto &i : testAttrs->attrs->lexicographicOrder(state->symbols)) {
             // might not have a name, if its the root attrset;
@@ -322,7 +367,8 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
 
             // Copy and append current attribute
             std::vector<AttrEntry> curAttrPath = attrPath;
-            const auto attrEntry = AttrEntry(i->value, name, i->pos);
+
+            const auto attrEntry = AttrEntry(i->value, name, currPos);
             curAttrPath.push_back(attrEntry);
             auto path = attrPathToPath(curAttrPath);
 
@@ -340,16 +386,19 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
             auto parentAttrsKey = AttrEntry(testAttrs);
             auto parent = valueMap.find(parentAttrsKey);
 
+            
             if (parent != valueMap.end() && entry != valueMap.end()) {
                 std::cout << "adding: " << entry->first
                           << " as child to: " << parent->first << std::endl;
                 parent->second.children.emplace(name, entry->first);
             }
 
-            // Skip if value exists and is already analyzed
+            // Skip value if exists and is already analyzed
             if (entry != valueMap.end() && entry->second.isIntrospected) {
                 std::cout << "SKIPPING: " << attrEntry << " already analyzed - "
                           << entry->second << std::endl;
+                // Important!: Add the attrName and link it to the already analyzed value
+                valueMap.emplace(attrEntry, entry->second);
                 continue;
             }
 
@@ -364,25 +413,68 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                         recurseValues(curAttrPath, value);
                     }
                 } catch (nix::Error &e) {
-                    // std::cout << "skipping ErrorValue" << std::endl;
+                    
                 }
             }
         }
     };
 
-    auto rootKey = AttrEntry(vRoot, {}, vRoot->attrs->pos);
+    auto posIdx = vRoot->attrs->pos;
+
+    auto rootKey = AttrEntry(vRoot, "<root>", state->positions[posIdx]);
     rootKey.isRoot = true;
 
     auto initPath = std::vector<AttrEntry>({rootKey});
-    valueMap.emplace(rootKey, ValueIntrospection());
+    valueMap.emplace(rootKey, ValueIntrospection({"<root>"}));
     introspectValue(initPath, vRoot);
     recurseValues(initPath, vRoot);
+
     std::cout << "\n---\nValueMap: \n";
     displayValueMap(valueMap);
     std::cout << "---\n";
+    // create an empty list []
 
-    std::string pretty = out.dump(4);
+    // Some pretty printing.
+    json out = json::array({});
+    for (auto pair : valueMap) {
+        out.push_back({
+            // Infos from ValueIntrospection
+            {"value", {
+                {"path", pair.second.path},
+                {"pos", posToJson(pair.second.valuePos)},
+                {"children", childrenToJson(pair.second.children)},
+                {"type", pair.second.valueType},
+                {"error", pair.second.isError},
+                {"error_description", pair.second.errorDescription}
+            }},
+            // Infos from AttrEntry
+            {"binding", {
+                {"pos", posToJson(pair.first.bindPos)},
+                {"name", pair.first.name},
+                {"is_root", pair.first.isRoot}
+            }},
+            
+        });
+    }
+
+    // std::string pretty = out.dump(4);
     // std::cout << pretty << std::endl;
+
+    std::string filename = "values.json"; // Name of the file to create/write
+
+    // Open the file in write mode. This will create the file if it doesn't exist,
+    // or overwrite it if it does.
+    std::ofstream file(filename);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open or create file." << filename << std::endl;
+    }
+
+    // Write the string to the file
+    file << out.dump(4);
+    file.close();
+    std::cout << "Success: Value introspection written to: " << filename << std::endl;
+
 }
 
 } // namespace flutsch
