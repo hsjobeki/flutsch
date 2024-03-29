@@ -10,7 +10,15 @@ A recursive nix value introspection tool.
 
 It introspects nested attributes and functions, presenting dynamic value information in a JSON format (position, value type, etc.). This output can be used for further static analysis tasks, including but not limited to inspection of documentation comments.
 
-It was designed as generic expression treewalker with the boobytraps and footguns of nixpkgs in mind.
+Try it out:
+
+```bash
+nix run github:hsjobeki/flutsch <path/to/file.nix>
+```
+
+This will create a file `values.json` in your current directory.
+
+Flutsch was designed as generic expression treewalker with the boobytraps and footguns of nixpkgs in mind.
 
 since it leverages the native C++ Nix evaluator. It catches all kinds of evaluation errors; and more importantly, it can provide introspection without adding more builtins / changing the nix language itself.
 
@@ -20,32 +28,96 @@ since it leverages the native C++ Nix evaluator. It catches all kinds of evaluat
 rec {
   a = {
     # The id function
-    id = x: x;
-  };
-  b = {
     inherit a;
-    inherit b;
   };
 }
 ```
 
-The result is the following hashmap:
+Which essentially contains three entries:
 
-```bash
-Key: (<root> @ 0x7ffff5254040), Value:  - (attrset @ /home/johannes/git/flutsch/test.nix:1:5) 
-    children: 
-        - b : (b @ 0x7ffff5254060)
-        - a : (a @ 0x7ffff5254080)
+1. The root attrset
+  `rec {...}`
+1. The binding for `a = ...`
+2. The recursive binding `inherit a`
 
-Key: (a @ 0x7ffff5254080), Value: <root>.a - (attrset @ /home/johannes/git/flutsch/test.nix:2:7) 
-    children: 
-        - id : (id @ 0x7ffff5254020)
+Theoretically there would also be a value `a.a.a` and so on. But flutsch terminates here since it has already introspected all the values.
 
-Key: (id @ 0x7ffff5254020), Value: <root>.a.id - (lambda @ /home/johannes/git/flutsch/test.nix:4:10)
-Key: (b @ 0x7ffff5254060), Value: <root>.b - (attrset @ /home/johannes/git/flutsch/test.nix:6:7) 
-    children: 
-        - b : (b @ 0x7ffff5254060)
-        - a : (a @ 0x7ffff5254080)
+The result looks then like this:
+
+```json
+[
+    {
+        "binding": {
+            "is_root": false,
+            "name": "a",
+            "pos": {
+                "column": 3,
+                "file": "test.nix",
+                "line": 2
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "a",
+                    "pos": {
+                        "column": 7,
+                        "file": "test.nix",
+                        "line": 2
+                    }
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "path": [
+                "<root>",
+                "a"
+            ],
+            "pos": {
+                "column": 7,
+                "file": "test.nix",
+                "line": 2
+            },
+            "type": "attrset"
+        }
+    },
+    {
+        "binding": {
+            "is_root": true,
+            "name": "<root>",
+            "pos": {
+                "column": 5,
+                "file": "test.nix",
+                "line": 1
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "a",
+                    "pos": {
+                        "column": 5,
+                        "file": "test.nix",
+                        "line": 1
+                    }
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "path": [
+                "<root>"
+            ],
+            "pos": {
+                "column": 5,
+                "file": "test.nix",
+                "line": 1
+            },
+            "type": "attrset"
+        }
+    }
+]
 ```
 
 Which can be used (e.g. via it json representation) for further static analysis, visualization tasks, or generating documentation.
