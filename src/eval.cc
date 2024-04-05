@@ -32,7 +32,16 @@ std::ostream &operator<<(std::ostream &os, const AttrEntry &e) {
     ss << std::hex << AttrEntryHash()(e) ;
     std::string hexStr = ss.str(); // Extract the formatted string
 
-    os << " @ 0x" << hexStr << ")" << " - " << e.bindPos.value();
+    
+
+    os << " @ 0x" << hexStr << ")" << " - ";
+    
+    if(e.bindPos.has_value() ) {
+        os << e.bindPos.value();
+    } else {
+        os << "noPos";
+    }
+
     return os;
 }
 
@@ -50,6 +59,12 @@ std::ostream &operator<<(std::ostream &os, const ValueIntrospection &e) {
         os << " children: \n";
         for (auto r : e.children) {
             os << "\t - " << r.first << " : " << r.second << "\n";
+        }
+    }
+    if(e.lambdaIntrospections.has_value()) {
+        os << "\tnFunction introspections: \n";
+        for(auto r : e.lambdaIntrospections.value()) {
+            os << "\t - " << r.first+1 << ". " << r.second.type << ": " << r.second.pos.value() << "\n";
         }
     }
     return os;

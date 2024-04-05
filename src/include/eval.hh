@@ -58,8 +58,21 @@ struct AttrEntryHash {
     }
 };
 
+struct FormalIntrospection {
+    std::string name;
+    std::optional<Pos> pos;
+    bool required;
+};
+
+struct LambdaIntrospection {
+    std::string type; // lambda, primop, primopApp, functor
+    std::optional<Pos> pos;
+    std::optional<std::string> arg;
+    std::optional<std::vector<FormalIntrospection>> formals;
+};
 
 struct ValueIntrospection {
+
     std::vector<std::string> path;
     // can be "lambda" | "attrset" | ...errorType
     std::optional<std::string> valueType;
@@ -71,6 +84,8 @@ struct ValueIntrospection {
 
     bool isError = false;
     std::optional<std::string> errorDescription;
+    
+    std::optional<std::unordered_map<uint,LambdaIntrospection>> lambdaIntrospections;
     // ValueIntrospection(ValueIntrospection &&o) : path(std::move(o.path)),
     // valueType(std::move(valueType)), valuePos(std::move(valuePos)) {}
 

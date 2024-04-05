@@ -1,14 +1,39 @@
-# let r = { inherit r; };
-# in r
+let 
+  pkgs = import <nixpkgs> {};
+in
 rec {
-  a = 1;
-  # a = 1;
-  # b = a;
-  # a = 1;
-  # b = a;
+  # inherit (pkgs.stdenv) mkDerivation;
+  inherit (pkgs.lib) makeScopeWithSplicing';
+
+  # fn = 
+  #   x: 
+  #   {pkgs ,lib ? pkgs.lib, ...}:
+  #   { 
+  #     __functor = super: {arg ? null}: 
+  #       { __functor = self: {arg ? null}: 
+  #         {x,y}: 
+  #           1; 
+  #       };
+  #   };
+
+  # User facing arguments:
+  # x, op, list
+  # f = map;
+  # g = map (x: x);
+  # fix = f: let x = f x; in x;
+  # f = {
+  #   __functor = s: {a,b}: {x,y}: true;
+  # };
+  # inherit (pkgs) lib;
+
+  # fn = args@{b,c ? {},d, ...}: x: c: d: 1;
   # a = {
   #   # The id function
-  #   id = x: x;
+  #   inherit a;
+  # };
+  # a = {
+  #   # The id function
+  # e = throw "This is a boobytrap";
   # };
 
   # b = {
@@ -23,7 +48,7 @@ rec {
 
   # errors = { a = throw "Some funny boobytrap"; };
   # errors = throw "Some funny boobytrap"; 
-  errors = { ${throw "Some funny boobytrap" } = 1;  }; 
+  # errors = { ${throw "Some funny boobytrap" } = 1;  }; 
 
 
   # # import invalid file

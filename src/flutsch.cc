@@ -203,7 +203,7 @@ static Value *releaseExprTopLevelValue(EvalState &state, Bindings &autoArgs,
     return vRoot;
 }
 
-std::optional<Pos> getPos(ref<EvalState> state, PosIdx &posIdx) {
+std::optional<Pos> getPos(ref<EvalState> state, const PosIdx &posIdx) {
     Pos pos = state->positions[posIdx];
     if (posIdx == noPos) {
         std::cout << " doesn't have explicit source position" << std::endl;
@@ -219,6 +219,30 @@ std::optional<Pos> getPos(ref<EvalState> state, PosIdx &posIdx) {
               << std::endl;
     return {};
 }
+
+// json LambdaIntrospectionToJson(std::optional<LambdaIntrospection> meta) {
+//     if (!meta.has_value()) {
+//         json j_null;
+//         return j_null;
+//     }
+//     meta = meta.value();
+    
+//     meta.value().arg;
+//     if(meta.value().formals.has_value()){
+//         for(auto formal: meta.value().formals.value()):{
+//         }
+//     }
+
+//     meta.value().pos;
+//     meta.value().type;
+//     // auto source = std::optional<std::string>({});
+//     // if (auto path = std::get_if<SourcePath>(&pos.value().origin)) {
+//     //     source = path->path.c_str();
+//     // }
+//     return json::object({{"column", pos.value().column},
+//                          {"line", pos.value().line},
+//                          {"file", source}});
+// }
 
 json posToJson(std::optional<Pos> pos) {
     if (!pos.has_value()) {
@@ -248,6 +272,306 @@ json childrenToJson(std::unordered_map<std::string, const AttrEntry>& children) 
         list.push_back(attrEntryToJson(child.second));
     }
     return list;
+}
+
+// struct FormalIntrospection {
+//     std::string name;
+//     std::optional<Pos> pos;
+//     bool required;
+// };
+
+// struct LambdaIntrospection {
+//     std::string type; // lambda, primop, primopApp, functor
+//     std::optional<Pos> pos;
+//     std::optional<std::string> arg;
+//     std::optional<std::vector<FormalIntrospection>> formals;
+// };
+
+json formalIntrospectionToJson(FormalIntrospection & formal) {
+    return json::object({
+        {"name", formal.name},
+        {"pos", posToJson(formal.pos)},
+        {"required", formal.required}
+    });
+}
+
+json lambdaIntrospectionToJson(LambdaIntrospection & meta) {
+    json j = json::object({
+        {"type", meta.type},
+        {"pos", posToJson(meta.pos)},
+        {"arg", meta.arg},
+        {"formals", json::array({})}
+    });
+
+    if(meta.formals.has_value()){
+        for(auto formal: meta.formals.value()){
+            j["formals"].push_back(formalIntrospectionToJson(formal));
+        }
+    }
+    return j;
+}
+
+json lambdaMapToJson(std::optional<std::unordered_map<uint,LambdaIntrospection>> & lambdas) {
+    if(!lambdas.has_value()){
+        json j_null;
+        return j_null;
+    }
+
+    json j = json::object({});
+    for (auto &i : lambdas.value()) {
+        j[std::to_string(i.first)]=lambdaIntrospectionToJson(i.second);
+    }
+    return j;
+}
+
+
+void displayFormals(std::vector<FormalIntrospection> & formals){
+    for (auto &i : formals){
+        std::cout << "\tFormal: " << i.name << " - ";
+
+        if(i.pos.has_value()){
+            std::cout << i.pos.value();
+        }else{ 
+            std::cout << "noPos";
+        }
+        
+        std::cout << " - " << (i.required ? std::string("(required)") : std::string("(optional)")) << std::endl;
+    }
+}
+
+
+
+void displayUnwrappedLambda(std::unordered_map<uint,LambdaIntrospection> & res){
+    std::cout << "displayUnwrappedLambda" << std::endl;
+    for (auto &i : res){
+        std::cout << "---" << std::endl;
+        std::cout << i.second.type << ": " << i.first << " - ";
+
+        if(i.second.pos.has_value()){
+            std::cout << i.second.pos.value();
+        }else{
+            std::cout << "noPos";
+        }
+        
+        std::cout << std::endl;
+
+        if(i.second.arg.has_value()){
+            std::cout << "- Arg: " << i.second.arg.value() << std::endl;
+        }
+        if(i.second.formals.has_value()){
+            displayFormals(i.second.formals.value());
+        }
+        std::cout << "---" << std::endl;
+    }
+}
+
+
+std::uintptr_t getPtr(Value *value) {
+    std::uintptr_t ptr_val = reinterpret_cast<std::uintptr_t>(value);
+    return ptr_val;
+}
+
+
+std::string describe(Value &v){
+
+    if(v.isLambda()){
+        return "lambda";
+    }
+    if(v.isPrimOp()){
+        return "primop - " + v.primOp->name;
+    }
+    if(v.isPrimOpApp()){
+        return "primopApp - " + v.primOpAppPrimOp()->name;
+    }
+    if(v.isList()){
+        return "list";
+    }
+    return std::string("trivial");
+}
+// Call a function with autoArgs
+// - {a, ...}: attrset with all required formals set to true
+// - a: single argument value
+nix::Value callFnWithAutoAttrs(nix::Value &value, ref<EvalState> state, std::optional<std::vector<FormalIntrospection>> formals){
+    if(!value.isLambda()){
+        std::cout << "callFnWithAutoAttrs: cannot be called with " << describe(value) << std::endl;
+        return value;
+    }
+    PosIdx currPos = value.lambda.fun->getPos();
+
+
+    Value res;
+    if(!value.lambda.fun->hasFormals()){
+        Value dummy;
+        // TODO: try different values for unwrapping?
+        // TODO: configure via flutsch config, which value to use for unwrapping.
+        dummy.mkNull();
+        state->callFunction(value, dummy, res, currPos);
+    }else{
+        // If the function has formals, we need to pass an attrset with at least all required formals
+        Value autoAttrs;
+
+        auto attrs = state->buildBindings(formals.value().size());
+        for (auto & i : formals.value()){
+            if(i.required){
+                // Unwrap with each required formal set to a boolean
+                // TODO: configure via flutsch config, which value to use for unwrapping.
+                attrs.alloc(i.name, noPos).mkBool(i.required);
+            }
+        }
+        autoAttrs.mkAttrs(attrs);
+        state->callFunction(value, autoAttrs, res, currPos);
+    }
+    return res;
+}
+
+
+LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
+    if(!value.isLambda()){
+        std::cout << "introspectLambda: called with non lambda value " << value.type() << std::endl; 
+        return {};
+    }
+    PosIdx currPos = value.lambda.fun->getPos();
+    std::optional<std::string> arg;
+    std::optional<std::vector<FormalIntrospection>> formals = {};
+    // Collect informations about the current lambda
+    // -----------------------------------------
+    // 1. argument name if it has one
+    if(!value.lambda.fun->hasFormals()) {
+        arg = state->symbols[value.lambda.fun->arg];
+    }
+    // 2. all formals, if it has formals.
+    if(value.lambda.fun->hasFormals()) {
+        // A formal looks like this:
+        //
+        // {a, b, ... }@args: body
+        //
+        // add information about the formals
+        // Name of each formal
+        // Position of each formal
+        // Whether the formal is required or not
+        // if it has an ellipsis
+        //
+        // TODO: can we add the name of @args?
+        std::vector<FormalIntrospection> formalsResult;
+        std::cout << "Introspecting formals: " << value.lambda.fun->formals->formals.size() << std::endl;
+
+        for (Formal formal : value.lambda.fun->formals->formals ) {
+            // Find out if the formal is required
+            Value reqValue;
+            reqValue.mkBool(formal.def);
+            bool required = !reqValue.boolean;
+
+            formalsResult.push_back(FormalIntrospection({state->symbols[formal.name],getPos(state,formal.pos), required}));
+        }
+
+        // Add the ellipsis at the end if exists
+        if(value.lambda.fun->formals->ellipsis){
+            formalsResult.push_back(FormalIntrospection({"...",{}, false}));
+        }
+
+        formals.emplace(formalsResult);
+    }
+
+    // 3. the source position
+    auto pos = getPos(state, currPos);
+
+    return LambdaIntrospection({"lambda",pos,arg,formals});
+}
+
+std::unordered_map<uint,LambdaIntrospection> unwrapLambda(nix::Value lambdaOrFunctor, ref<EvalState> state) {
+    // The result of the lambda will be stored in vTmp
+    Value vTmp = lambdaOrFunctor;
+
+    PosIdx currPos;
+    Symbol sFunctor = state->symbols.create("__functor");
+    Attr * functor;
+
+    std::unordered_map<uint,LambdaIntrospection> result;
+    int counter = 0;
+    while(true){
+        try {
+            std::cout << "C: " << counter << " - Type: " << describe(vTmp) << std::endl;
+            // TODO: find a better way for unwrapping limit.
+            // We cannot really compare pointers
+            if(counter >= 20 ){
+                std::cout << "STOP: max recursion depth" << std::endl;
+                return result;
+            }
+    
+
+            switch (vTmp.type()) {
+                case nAttrs: {
+                    // state->forceAttrs(vTmp, currPos, "unwrapped value is not an attribute set.");
+                    Attr * f = vTmp.attrs->get(sFunctor);
+                    if(f != nullptr){
+                        // The Attribute set is a functor. (self: x: body)
+                        std::cout << "functor" << std::endl;
+                        currPos = f->pos;
+
+                        Value publicFunctor;
+                        // Apply 'self' to get the actual user facing argument(s)
+                        state->callFunction(*f->value, vTmp, publicFunctor, currPos);
+
+                        // Collect information about the public interface of the functor
+                        state->forceFunction(publicFunctor, currPos, "functor must take at least two arguments. Value is not a function.");
+                        LambdaIntrospection info = introspectLambda(publicFunctor,state);
+                        info.type = "functor";
+
+                        result.emplace(counter, info);
+
+                        // Unwrap the next lambda.
+                        vTmp = callFnWithAutoAttrs(publicFunctor, state, info.formals);
+
+                    }else{
+                        // return if we got just an attrset
+                        return result;
+                    }
+                    break;
+                }
+                case nFunction: {
+                    // state->forceFunction(vTmp, currPos, "unwrapped value is not a function.");
+                    currPos = noPos;
+                    if(vTmp.isLambda()){
+                        std::cout << "lambda" << std::endl;
+
+                        currPos = vTmp.lambda.fun->pos;
+                        LambdaIntrospection info = introspectLambda(vTmp,state);
+                        // Write the lambda info to the result 
+                        result.emplace(counter, info);
+                        // Unwrap the next lambda.
+                        vTmp = callFnWithAutoAttrs(vTmp, state, info.formals);
+                    }
+                    
+                    // Primop and primopApp are not unwrapped.
+                    // TODO: e.g. head [ (x: x) ] returns another lambda. 
+                    if(vTmp.isPrimOp()){
+                        std::cout << "primop" << std::endl;
+
+                    }
+                    if(vTmp.isPrimOpApp()){
+                        std::cout << "primopApp" << std::endl;
+                    }
+                    break;
+                }
+                default:
+                    std::cout << "STOP: cannot unwrap: " << vTmp.type() << std::endl;
+                    return result;
+            }
+
+            //Security mechanism to avoid loops for now
+            if(counter >= 10 ){
+                return result;
+            }
+
+            state->forceValue(vTmp, currPos);
+            std::cout << "Unwrapped lambda: " <<  counter << " - continue" << std::endl;
+            counter++;
+
+        }catch(nix::Error &e){
+            std::cout << "STOP - Cannot unwrap further - " << e.msg() << std::endl;
+            return result;
+        }
+    }
 }
 
 void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
@@ -296,6 +620,16 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                 displayAttrs(test, state);
                 posIdx = test->attrs->pos;
                 type = std::string("attrset");
+                Attr *functor = test->attrs->get(state->symbols.create("__functor"));
+                if (functor != nullptr) {
+                    std::cout << "is functor" << std::endl;
+                    type = std::string("attrset/functor");
+                    auto meta = unwrapLambda(*test, state);
+
+                    data->second.lambdaIntrospections.emplace(meta);
+
+                    displayUnwrappedLambda(meta);
+                }
                 // If the value is an attrset, add all its attributes as children
                 for (auto &i : test->attrs->lexicographicOrder(state->symbols)) {
                     const std::string &name = state->symbols[i->name];
@@ -313,11 +647,28 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
             }
 
             if (test->isLambda()) {
+                // attrPath.back().name;
+                // There are 3 different types of functions:
+                // - lambda
+
+                // Those two cannot be unwrapped
+                // - app
+                // - primopApp
+                // We will add them as is
+
                 state->forceFunction(*test, noPos, "error");
 
                 displayLambda(test, state);
                 posIdx = test->lambda.fun->getPos();
                 type = std::string("lambda");
+                // If the value is a lambda then we want to unwrap it until we get something else
+                if(attrPath.back().name.value_or("") != "__functor"){
+                    auto meta = unwrapLambda(*test, state);
+                    data->second.lambdaIntrospections.emplace(meta);
+                    displayUnwrappedLambda(meta);
+                }else{
+                    std::cout << "Skipping functor. Those are handled separately" << std::endl;
+                }
             }
 
             if (data != valueMap.end()) {
@@ -326,7 +677,27 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                 } else {
                     data->second.valuePos.reset();
                 }
-                data->second.valueType = type;
+
+
+                std::string t;
+                switch (test->type()) {
+                    case nInt: t = "int"; break;
+                    case nBool: t = "bool"; break;
+                    case nString: t = "string"; break;
+                    case nPath: t = "path"; break;
+                    case nNull: t = "null"; break;
+                    case nAttrs: t = type; break;
+                    case nList: t = "list"; break;
+                    case nFunction: t = "lambda"; break;
+                    case nExternal:
+                        t = test->external->typeOf();
+                        break;
+                    case nFloat: t = "float"; break;
+                    case nThunk: t = "thunk"; break;
+                    default: t = "unknown"; break;
+                }
+                data->second.valueType = t;
+                
             }
 
         } catch (nix::Error &e) {
@@ -445,7 +816,8 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                 {"children", childrenToJson(pair.second.children)},
                 {"type", pair.second.valueType},
                 {"error", pair.second.isError},
-                {"error_description", pair.second.errorDescription}
+                {"error_description", pair.second.errorDescription},
+                {"lambda", lambdaMapToJson(pair.second.lambdaIntrospections)}
             }},
             // Infos from AttrEntry
             {"binding", {
