@@ -1,0 +1,1107 @@
+[
+    {
+        "binding": {
+            "is_root": false,
+            "name": "__functor",
+            "pos": {
+                "column": 7,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 440
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functor"
+            ],
+            "pos": {
+                "column": 19,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 440
+            },
+            "type": "lambda"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "lib",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 1
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functionArgs",
+                "lib"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "curl",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 2
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functionArgs",
+                "curl"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "meta",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 100
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "meta"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "hash",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 65
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "hash"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "version",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 62
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "version"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "override",
+            "pos": {
+                "column": 11,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/customisation.nix",
+                "line": 118
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "__functor",
+                    "pos": {
+                        "column": 5,
+                        "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                        "line": 439
+                    }
+                },
+                {
+                    "is_root": false,
+                    "name": "__functionArgs",
+                    "pos": {
+                        "column": 5,
+                        "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                        "line": 439
+                    }
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "lambda": {},
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override"
+            ],
+            "pos": {
+                "column": 5,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 439
+            },
+            "type": "attrset/functor"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "executable",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 93
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "executable"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "netrcPhase",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 77
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "netrcPhase"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "sha1",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 70
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "sha1"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "fetchurl",
+            "pos": {
+                "column": 17,
+                "file": "/home/johannes/git/flutsch/test.nix",
+                "line": 5
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "override",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "__functor",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "__functionArgs",
+                    "pos": null
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "lambda": {},
+            "path": [
+                "<root>",
+                "fetchurl"
+            ],
+            "pos": null,
+            "type": "attrset/functor"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "downloadToTemp",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 90
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "downloadToTemp"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "showURLs",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 97
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "showURLs"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "stdenvNoCC",
+            "pos": {
+                "column": 49,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 1
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functionArgs",
+                "stdenvNoCC"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "sha256",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 71
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "sha256"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "netrcImpureEnvVars",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 81
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "netrcImpureEnvVars"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "sha512",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 72
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "sha512"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "url",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 42
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "url"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "name",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 58
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "name"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": true,
+            "name": "<root>",
+            "pos": {
+                "column": 5,
+                "file": "/home/johannes/git/flutsch/test.nix",
+                "line": 4
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "fetchurl",
+                    "pos": {
+                        "column": 5,
+                        "file": "/home/johannes/git/flutsch/test.nix",
+                        "line": 4
+                    }
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>"
+            ],
+            "pos": {
+                "column": 5,
+                "file": "/home/johannes/git/flutsch/test.nix",
+                "line": 4
+            },
+            "type": "attrset"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "__functionArgs",
+            "pos": {
+                "column": 7,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 441
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "lib",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "curl",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "cacert",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "stdenvNoCC",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "buildPackages",
+                    "pos": null
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functionArgs"
+            ],
+            "pos": null,
+            "type": "attrset"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "nativeBuildInputs",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 109
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "nativeBuildInputs"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "preferLocalBuild",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 106
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "preferLocalBuild"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "buildPackages",
+            "pos": {
+                "column": 8,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 1
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functionArgs",
+                "buildPackages"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "curlOpts",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 51
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "curlOpts"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "outputHashAlgo",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 69
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "outputHashAlgo"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "passthru",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 103
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "passthru"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "cacert",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 3
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "override",
+                "__functionArgs",
+                "cacert"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "__functionArgs",
+            "pos": {
+                "column": 7,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 441
+            }
+        },
+        "value": {
+            "children": [
+                {
+                    "is_root": false,
+                    "name": "version",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "urls",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "sha256",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "sha1",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "preferLocalBuild",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "sha512",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "pname",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "curlOpts",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "nativeBuildInputs",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "curlOptsList",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "url",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "executable",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "showURLs",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "recursiveHash",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "outputHash",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "hash",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "netrcPhase",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "meta",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "downloadToTemp",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "name",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "outputHashAlgo",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "netrcImpureEnvVars",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "postFetch",
+                    "pos": null
+                },
+                {
+                    "is_root": false,
+                    "name": "passthru",
+                    "pos": null
+                }
+            ],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs"
+            ],
+            "pos": null,
+            "type": "attrset"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "outputHash",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 68
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "outputHash"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "pname",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 61
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "pname"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "curlOptsList",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 54
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "curlOptsList"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "postFetch",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 85
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "postFetch"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "recursiveHash",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 74
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "recursiveHash"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "urls",
+            "pos": {
+                "column": 3,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix",
+                "line": 46
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functionArgs",
+                "urls"
+            ],
+            "pos": null,
+            "type": "bool"
+        }
+    },
+    {
+        "binding": {
+            "is_root": false,
+            "name": "__functor",
+            "pos": {
+                "column": 7,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 440
+            }
+        },
+        "value": {
+            "children": [],
+            "error": false,
+            "error_description": null,
+            "lambda": null,
+            "path": [
+                "<root>",
+                "fetchurl",
+                "__functor"
+            ],
+            "pos": {
+                "column": 19,
+                "file": "/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix",
+                "line": 440
+            },
+            "type": "lambda"
+        }
+    }
+]

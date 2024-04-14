@@ -1,0 +1,276 @@
+{}
+./test.nix
+rootDir
+positionsEval
+Introspecting value of <root> @ 0x7ffd4c7c50f8
+{ fetchurl=...; }
+looking into symbol: fetchurl
+valueMap - inserting: <root>.fetchurl
+Introspecting value of <root>.fetchurl @ 0x7ffd4c7c4c78
+{ __functionArgs=...; __functor=...; override=...; }
+is functor
+C: 0 - Type: trivial
+cannot introspect further. Functor application yielded non-function value. This may happen in cases where we get the dummy value back.
+{ __functionArgs=...; __functor=...; override=...; }
+displayUnwrappedLambda
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+looking into symbol: __functionArgs
+valueMap - inserting: <root>.fetchurl.__functionArgs
+Introspecting value of <root>.fetchurl.__functionArgs @ 0x7ffd4c7c47f8
+{ curlOpts=...; curlOptsList=...; downloadToTemp=...; executable=...; hash=...; meta=...; name=...; nativeBuildInputs=...; netrcImpureEnvVars=...; netrcPhase=...; outputHash=...; outputHashAlgo=...; passthru=...; pname=...; postFetch=...; preferLocalBuild=...; recursiveHash=...; sha1=...; sha256=...; sha512=...; showURLs=...; url=...; urls=...; version=...; }
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+looking into symbol: curlOpts
+valueMap - inserting: <root>.fetchurl.__functionArgs.curlOpts
+Introspecting value of <root>.fetchurl.__functionArgs.curlOpts @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: curlOptsList
+valueMap - inserting: <root>.fetchurl.__functionArgs.curlOptsList
+Introspecting value of <root>.fetchurl.__functionArgs.curlOptsList @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: downloadToTemp
+valueMap - inserting: <root>.fetchurl.__functionArgs.downloadToTemp
+Introspecting value of <root>.fetchurl.__functionArgs.downloadToTemp @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: executable
+valueMap - inserting: <root>.fetchurl.__functionArgs.executable
+Introspecting value of <root>.fetchurl.__functionArgs.executable @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: hash
+valueMap - inserting: <root>.fetchurl.__functionArgs.hash
+Introspecting value of <root>.fetchurl.__functionArgs.hash @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: meta
+valueMap - inserting: <root>.fetchurl.__functionArgs.meta
+Introspecting value of <root>.fetchurl.__functionArgs.meta @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: name
+valueMap - inserting: <root>.fetchurl.__functionArgs.name
+Introspecting value of <root>.fetchurl.__functionArgs.name @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: nativeBuildInputs
+valueMap - inserting: <root>.fetchurl.__functionArgs.nativeBuildInputs
+Introspecting value of <root>.fetchurl.__functionArgs.nativeBuildInputs @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: netrcImpureEnvVars
+valueMap - inserting: <root>.fetchurl.__functionArgs.netrcImpureEnvVars
+Introspecting value of <root>.fetchurl.__functionArgs.netrcImpureEnvVars @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: netrcPhase
+valueMap - inserting: <root>.fetchurl.__functionArgs.netrcPhase
+Introspecting value of <root>.fetchurl.__functionArgs.netrcPhase @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: outputHash
+valueMap - inserting: <root>.fetchurl.__functionArgs.outputHash
+Introspecting value of <root>.fetchurl.__functionArgs.outputHash @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: outputHashAlgo
+valueMap - inserting: <root>.fetchurl.__functionArgs.outputHashAlgo
+Introspecting value of <root>.fetchurl.__functionArgs.outputHashAlgo @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: passthru
+valueMap - inserting: <root>.fetchurl.__functionArgs.passthru
+Introspecting value of <root>.fetchurl.__functionArgs.passthru @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: pname
+valueMap - inserting: <root>.fetchurl.__functionArgs.pname
+Introspecting value of <root>.fetchurl.__functionArgs.pname @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: postFetch
+valueMap - inserting: <root>.fetchurl.__functionArgs.postFetch
+Introspecting value of <root>.fetchurl.__functionArgs.postFetch @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: preferLocalBuild
+valueMap - inserting: <root>.fetchurl.__functionArgs.preferLocalBuild
+Introspecting value of <root>.fetchurl.__functionArgs.preferLocalBuild @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: recursiveHash
+valueMap - inserting: <root>.fetchurl.__functionArgs.recursiveHash
+Introspecting value of <root>.fetchurl.__functionArgs.recursiveHash @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: sha1
+valueMap - inserting: <root>.fetchurl.__functionArgs.sha1
+Introspecting value of <root>.fetchurl.__functionArgs.sha1 @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: sha256
+valueMap - inserting: <root>.fetchurl.__functionArgs.sha256
+Introspecting value of <root>.fetchurl.__functionArgs.sha256 @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: sha512
+valueMap - inserting: <root>.fetchurl.__functionArgs.sha512
+Introspecting value of <root>.fetchurl.__functionArgs.sha512 @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: showURLs
+valueMap - inserting: <root>.fetchurl.__functionArgs.showURLs
+Introspecting value of <root>.fetchurl.__functionArgs.showURLs @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: url
+valueMap - inserting: <root>.fetchurl.__functionArgs.url
+Introspecting value of <root>.fetchurl.__functionArgs.url @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: urls
+valueMap - inserting: <root>.fetchurl.__functionArgs.urls
+Introspecting value of <root>.fetchurl.__functionArgs.urls @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: version
+valueMap - inserting: <root>.fetchurl.__functionArgs.version
+Introspecting value of <root>.fetchurl.__functionArgs.version @ 0x7ffd4c7c4378
+ doesn't have explicit source position
+looking into symbol: __functor
+valueMap - inserting: <root>.fetchurl.__functor
+Introspecting value of <root>.fetchurl.__functor @ 0x7ffd4c7c47f8
+<lambda/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:440:19>
+Skipping functor. Those are handled separately
+looking into symbol: override
+valueMap - inserting: <root>.fetchurl.override
+Introspecting value of <root>.fetchurl.override @ 0x7ffd4c7c47f8
+{ __functionArgs=...; __functor=...; }
+is functor
+C: 0 - Type: trivial
+cannot introspect further. Functor application yielded non-function value. This may happen in cases where we get the dummy value back.
+{ __functionArgs=...; __functor=...; }
+displayUnwrappedLambda
+looking into symbol: __functionArgs
+valueMap - inserting: <root>.fetchurl.override.__functionArgs
+Introspecting value of <root>.fetchurl.override.__functionArgs @ 0x7ffd4c7c4378
+{ buildPackages=...; cacert=...; curl=...; lib=...; stdenvNoCC=...; }
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+ doesn't have explicit source position
+looking into symbol: buildPackages
+valueMap - inserting: <root>.fetchurl.override.__functionArgs.buildPackages
+Introspecting value of <root>.fetchurl.override.__functionArgs.buildPackages @ 0x7ffd4c7c3ef8
+ doesn't have explicit source position
+looking into symbol: cacert
+valueMap - inserting: <root>.fetchurl.override.__functionArgs.cacert
+Introspecting value of <root>.fetchurl.override.__functionArgs.cacert @ 0x7ffd4c7c3ef8
+ doesn't have explicit source position
+looking into symbol: curl
+valueMap - inserting: <root>.fetchurl.override.__functionArgs.curl
+Introspecting value of <root>.fetchurl.override.__functionArgs.curl @ 0x7ffd4c7c3ef8
+ doesn't have explicit source position
+looking into symbol: lib
+valueMap - inserting: <root>.fetchurl.override.__functionArgs.lib
+Introspecting value of <root>.fetchurl.override.__functionArgs.lib @ 0x7ffd4c7c3ef8
+ doesn't have explicit source position
+looking into symbol: stdenvNoCC
+valueMap - inserting: <root>.fetchurl.override.__functionArgs.stdenvNoCC
+Introspecting value of <root>.fetchurl.override.__functionArgs.stdenvNoCC @ 0x7ffd4c7c3ef8
+ doesn't have explicit source position
+looking into symbol: __functor
+valueMap - inserting: <root>.fetchurl.override.__functor
+Introspecting value of <root>.fetchurl.override.__functor @ 0x7ffd4c7c4378
+<lambda/nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:440:19>
+Skipping functor. Those are handled separately
+
+---
+ValueMap: 
+Key: (__functor @ 0x69ec82252afda3cd) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:440:7, Value: <root>.fetchurl.__functor - (lambda @ /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:440:19)
+Key: (urls @ 0x1511caa766f46dcf) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:46:3, Value: <root>.fetchurl.__functionArgs.urls - (bool @ noPos)
+Key: (recursiveHash @ 0xf27880232dffa3ea) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:74:3, Value: <root>.fetchurl.__functionArgs.recursiveHash - (bool @ noPos)
+Key: (postFetch @ 0x397fe86f2cfe4c44) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:85:3, Value: <root>.fetchurl.__functionArgs.postFetch - (bool @ noPos)
+Key: (curlOptsList @ 0xa3e38dbf24ea8c61) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:54:3, Value: <root>.fetchurl.__functionArgs.curlOptsList - (bool @ noPos)
+Key: (pname @ 0x961580074dbc269e) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:61:3, Value: <root>.fetchurl.__functionArgs.pname - (bool @ noPos)
+Key: (outputHash @ 0xfe49802f2cfea5b5) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:68:3, Value: <root>.fetchurl.__functionArgs.outputHash - (bool @ noPos)
+Key: (__functionArgs @ 0xe9c721263ac61474) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:441:7, Value: <root>.fetchurl.__functionArgs - (attrset @ noPos) children: 
+	 - version : (version @ 0x742bca66a6beee8e) - noPos
+	 - urls : (urls @ 0x1511caa766f46dcf) - noPos
+	 - sha256 : (sha256 @ 0xc443dc2334d2fefa) - noPos
+	 - sha1 : (sha1 @ 0x2da41ca7beff3f5d) - noPos
+	 - preferLocalBuild : (preferLocalBuild @ 0xe0be94672fbe36fd) - noPos
+	 - sha512 : (sha512 @ 0xe9458a05387e896c) - noPos
+	 - pname : (pname @ 0x961580074dbc269e) - noPos
+	 - curlOpts : (curlOpts @ 0x28a0a6377aacc585) - noPos
+	 - nativeBuildInputs : (nativeBuildInputs @ 0x5f3380362c760ba0) - noPos
+	 - curlOptsList : (curlOptsList @ 0xa3e38dbf24ea8c61) - noPos
+	 - url : (url @ 0x16ec302f8def1097) - noPos
+	 - executable : (executable @ 0x2e57f1227c7e57d0) - noPos
+	 - showURLs : (showURLs @ 0x9f63a5e72cf68cfe) - noPos
+	 - recursiveHash : (recursiveHash @ 0xf27880232dffa3ea) - noPos
+	 - outputHash : (outputHash @ 0xfe49802f2cfea5b5) - noPos
+	 - hash : (hash @ 0x4af42136b8fd124a) - noPos
+	 - netrcPhase : (netrcPhase @ 0xbe02cb2f2de37c62) - noPos
+	 - meta : (meta @ 0x510a8e3e2c0e7f66) - noPos
+	 - downloadToTemp : (downloadToTemp @ 0x9ef5a5230dfe9951) - noPos
+	 - name : (name @ 0x3eeb89672ceaa8df) - noPos
+	 - outputHashAlgo : (outputHashAlgo @ 0x4475842f2674a6d7) - noPos
+	 - netrcImpureEnvVars : (netrcImpureEnvVars @ 0xb34e38eb644e5ad3) - noPos
+	 - postFetch : (postFetch @ 0x397fe86f2cfe4c44) - noPos
+	 - passthru : (passthru @ 0xfcaea0212cbe9760) - noPos
+
+Key: (cacert @ 0x47ff8016b4fe6cee) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:3:3, Value: <root>.fetchurl.override.__functionArgs.cacert - (bool @ noPos)
+Key: (passthru @ 0xfcaea0212cbe9760) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:103:3, Value: <root>.fetchurl.__functionArgs.passthru - (bool @ noPos)
+Key: (outputHashAlgo @ 0x4475842f2674a6d7) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:69:3, Value: <root>.fetchurl.__functionArgs.outputHashAlgo - (bool @ noPos)
+Key: (curlOpts @ 0x28a0a6377aacc585) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:51:3, Value: <root>.fetchurl.__functionArgs.curlOpts - (bool @ noPos)
+Key: (buildPackages @ 0xd0a5905608fcb5ae) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:1:8, Value: <root>.fetchurl.override.__functionArgs.buildPackages - (bool @ noPos)
+Key: (preferLocalBuild @ 0xe0be94672fbe36fd) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:106:3, Value: <root>.fetchurl.__functionArgs.preferLocalBuild - (bool @ noPos)
+Key: (nativeBuildInputs @ 0x5f3380362c760ba0) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:109:3, Value: <root>.fetchurl.__functionArgs.nativeBuildInputs - (bool @ noPos)
+Key: (__functionArgs @ 0xe9c721263b300a74) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:441:7, Value: <root>.fetchurl.override.__functionArgs - (attrset @ noPos) children: 
+	 - lib : (lib @ 0x5bd400278cf73efd) - noPos
+	 - curl : (curl @ 0x51cf812626eed4fe) - noPos
+	 - cacert : (cacert @ 0x47ff8016b4fe6cee) - noPos
+	 - stdenvNoCC : (stdenvNoCC @ 0x2ea58322bdbc67f8) - noPos
+	 - buildPackages : (buildPackages @ 0xd0a5905608fcb5ae) - noPos
+
+Key: (<root> @ 0xfe80803317976dab) - /home/johannes/git/flutsch/test.nix:4:5, Value: <root> - (attrset @ /home/johannes/git/flutsch/test.nix:4:5) children: 
+	 - fetchurl : (fetchurl @ 0xf6c880661f879ac6) - /home/johannes/git/flutsch/test.nix:4:5
+
+Key: (name @ 0x3eeb89672ceaa8df) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:58:3, Value: <root>.fetchurl.__functionArgs.name - (bool @ noPos)
+Key: (url @ 0x16ec302f8def1097) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:42:3, Value: <root>.fetchurl.__functionArgs.url - (bool @ noPos)
+Key: (sha512 @ 0xe9458a05387e896c) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:72:3, Value: <root>.fetchurl.__functionArgs.sha512 - (bool @ noPos)
+Key: (netrcImpureEnvVars @ 0xb34e38eb644e5ad3) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:81:3, Value: <root>.fetchurl.__functionArgs.netrcImpureEnvVars - (bool @ noPos)
+Key: (sha256 @ 0xc443dc2334d2fefa) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:71:3, Value: <root>.fetchurl.__functionArgs.sha256 - (bool @ noPos)
+Key: (stdenvNoCC @ 0x2ea58322bdbc67f8) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:1:49, Value: <root>.fetchurl.override.__functionArgs.stdenvNoCC - (bool @ noPos)
+Key: (showURLs @ 0x9f63a5e72cf68cfe) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:97:3, Value: <root>.fetchurl.__functionArgs.showURLs - (bool @ noPos)
+Key: (downloadToTemp @ 0x9ef5a5230dfe9951) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:90:3, Value: <root>.fetchurl.__functionArgs.downloadToTemp - (bool @ noPos)
+Key: (fetchurl @ 0xf6c880661f879ac6) - /home/johannes/git/flutsch/test.nix:5:17, Value: <root>.fetchurl - (attrset/functor @ noPos) children: 
+	 - override : (override @ 0x63dc81963108f606) - noPos
+	 - __functor : (__functor @ 0x69ec82252afda3cd) - noPos
+	 - __functionArgs : (__functionArgs @ 0xe9c721263ac61474) - noPos
+	nFunction introspections: 
+
+Key: (sha1 @ 0x2da41ca7beff3f5d) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:70:3, Value: <root>.fetchurl.__functionArgs.sha1 - (bool @ noPos)
+Key: (netrcPhase @ 0xbe02cb2f2de37c62) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:77:3, Value: <root>.fetchurl.__functionArgs.netrcPhase - (bool @ noPos)
+Key: (executable @ 0x2e57f1227c7e57d0) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:93:3, Value: <root>.fetchurl.__functionArgs.executable - (bool @ noPos)
+Key: (override @ 0x63dc81963108f606) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/customisation.nix:118:11, Value: <root>.fetchurl.override - (attrset/functor @ /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:439:5) children: 
+	 - __functor : (__functor @ 0x69ec82252afda60d) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:439:5
+	 - __functionArgs : (__functionArgs @ 0xe9c721263b300a74) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:439:5
+	nFunction introspections: 
+
+Key: (version @ 0x742bca66a6beee8e) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:62:3, Value: <root>.fetchurl.__functionArgs.version - (bool @ noPos)
+Key: (hash @ 0x4af42136b8fd124a) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:65:3, Value: <root>.fetchurl.__functionArgs.hash - (bool @ noPos)
+Key: (meta @ 0x510a8e3e2c0e7f66) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:100:3, Value: <root>.fetchurl.__functionArgs.meta - (bool @ noPos)
+Key: (curl @ 0x51cf812626eed4fe) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:2:3, Value: <root>.fetchurl.override.__functionArgs.curl - (bool @ noPos)
+Key: (lib @ 0x5bd400278cf73efd) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/pkgs/build-support/fetchurl/default.nix:1:3, Value: <root>.fetchurl.override.__functionArgs.lib - (bool @ noPos)
+Key: (__functor @ 0x69ec82252afda60d) - /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:440:7, Value: <root>.fetchurl.override.__functor - (lambda @ /nix/store/wcidiyklj0nrljlz5m3qlkvhv8f2ddv8-source/lib/trivial.nix:440:19)
+---
+Success: Value introspection written to: values.json

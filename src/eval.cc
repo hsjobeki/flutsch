@@ -64,7 +64,13 @@ std::ostream &operator<<(std::ostream &os, const ValueIntrospection &e) {
     if(e.lambdaIntrospections.has_value()) {
         os << "\tnFunction introspections: \n";
         for(auto r : e.lambdaIntrospections.value()) {
-            os << "\t - " << r.first+1 << ". " << r.second.type << ": " << r.second.pos.value() << "\n";
+            os << "\t - " << r.first+1 << ". " << r.second.type << ": ";
+            if(r.second.pos.has_value()) {
+                os << r.second.pos.value();
+            }else {
+                os << "noPos";
+            }
+            os << "\n";
         }
     }
     return os;

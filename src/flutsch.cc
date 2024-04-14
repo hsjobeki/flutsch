@@ -274,19 +274,6 @@ json childrenToJson(std::unordered_map<std::string, const AttrEntry>& children) 
     return list;
 }
 
-// struct FormalIntrospection {
-//     std::string name;
-//     std::optional<Pos> pos;
-//     bool required;
-// };
-
-// struct LambdaIntrospection {
-//     std::string type; // lambda, primop, primopApp, functor
-//     std::optional<Pos> pos;
-//     std::optional<std::string> arg;
-//     std::optional<std::vector<FormalIntrospection>> formals;
-// };
-
 json formalIntrospectionToJson(FormalIntrospection & formal) {
     return json::object({
         {"name", formal.name},
@@ -386,12 +373,24 @@ std::string describe(Value &v){
     if(v.isList()){
         return "list";
     }
-    return std::string("trivial");
+    auto repr = showType(v.type());
+    return std::string(repr);
 }
+
+
+typedef std::vector<SharedValueRef> SharedValueRefs;
+typedef std::shared_ptr<nix::Value> SharedValueRef;
+
 // Call a function with autoArgs
 // - {a, ...}: attrset with all required formals set to true
 // - a: single argument value
-nix::Value callFnWithAutoAttrs(nix::Value &value, ref<EvalState> state, std::optional<std::vector<FormalIntrospection>> formals){
+nix::Value callFnWithAutoAttrs(
+        nix::Value &value, 
+        ref<EvalState> state, 
+        std::optional<std::vector<FormalIntrospection>> formals, 
+        SharedValueRefs &dummies
+    )
+    {
     if(!value.isLambda()){
         std::cout << "callFnWithAutoAttrs: cannot be called with " << describe(value) << std::endl;
         return value;
@@ -400,16 +399,13 @@ nix::Value callFnWithAutoAttrs(nix::Value &value, ref<EvalState> state, std::opt
 
 
     Value res;
+    std::shared_ptr<nix::Value> applyArg = dummies.back(); 
     if(!value.lambda.fun->hasFormals()){
-        Value dummy;
-        // TODO: try different values for unwrapping?
-        // TODO: configure via flutsch config, which value to use for unwrapping.
-        dummy.mkNull();
-        state->callFunction(value, dummy, res, currPos);
+        // If the function has no formals, we can just pass some value i.e. some int.
+        applyArg->mkInt(128);
+        state->callFunction(value, *applyArg.get(), res, currPos);
     }else{
         // If the function has formals, we need to pass an attrset with at least all required formals
-        Value autoAttrs;
-
         auto attrs = state->buildBindings(formals.value().size());
         for (auto & i : formals.value()){
             if(i.required){
@@ -418,8 +414,8 @@ nix::Value callFnWithAutoAttrs(nix::Value &value, ref<EvalState> state, std::opt
                 attrs.alloc(i.name, noPos).mkBool(i.required);
             }
         }
-        autoAttrs.mkAttrs(attrs);
-        state->callFunction(value, autoAttrs, res, currPos);
+        applyArg->mkAttrs(attrs);
+        state->callFunction(value, *applyArg.get(), res, currPos);
     }
     return res;
 }
@@ -430,7 +426,8 @@ LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
         std::cout << "introspectLambda: called with non lambda value " << value.type() << std::endl; 
         return {};
     }
-    PosIdx currPos = value.lambda.fun->getPos();
+        
+    PosIdx currPos = value.lambda.fun->getPos();    
     std::optional<std::string> arg;
     std::optional<std::vector<FormalIntrospection>> formals = {};
     // Collect informations about the current lambda
@@ -453,7 +450,6 @@ LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
         //
         // TODO: can we add the name of @args?
         std::vector<FormalIntrospection> formalsResult;
-        std::cout << "Introspecting formals: " << value.lambda.fun->formals->formals.size() << std::endl;
 
         for (Formal formal : value.lambda.fun->formals->formals ) {
             // Find out if the formal is required
@@ -481,10 +477,17 @@ LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
 std::unordered_map<uint,LambdaIntrospection> unwrapLambda(nix::Value lambdaOrFunctor, ref<EvalState> state) {
     // The result of the lambda will be stored in vTmp
     Value vTmp = lambdaOrFunctor;
+    
+    // SharedValueRefs 
+
 
     PosIdx currPos;
     Symbol sFunctor = state->symbols.create("__functor");
-    Attr * functor;
+
+    // A list of dummy values. 
+    // Also if we get one of the dummies back we know that we cannot unwrap further.
+    SharedValueRefs dummies;
+    
 
     std::unordered_map<uint,LambdaIntrospection> result;
     int counter = 0;
@@ -493,34 +496,58 @@ std::unordered_map<uint,LambdaIntrospection> unwrapLambda(nix::Value lambdaOrFun
             std::cout << "C: " << counter << " - Type: " << describe(vTmp) << std::endl;
             // TODO: find a better way for unwrapping limit.
             // We cannot really compare pointers
-            if(counter >= 20 ){
+
+            if(counter >= 10 ){
                 std::cout << "STOP: max recursion depth" << std::endl;
                 return result;
             }
-    
+            
+            std::shared_ptr<nix::Value> sharedArg = std::make_shared<nix::Value>();
+            dummies.push_back(sharedArg);
+
+            std::cout << "pushed new shared applyArgument " << " - " << dummies.size() << std::endl;
 
             switch (vTmp.type()) {
                 case nAttrs: {
+                    std::cout << "attrs" << std::endl;
                     // state->forceAttrs(vTmp, currPos, "unwrapped value is not an attribute set.");
                     Attr * f = vTmp.attrs->get(sFunctor);
                     if(f != nullptr){
+                        std::cout << "is functor" << std::endl;
                         // The Attribute set is a functor. (self: x: body)
-                        std::cout << "functor" << std::endl;
                         currPos = f->pos;
+                        std::cout << "has pos" << std::endl;
 
                         Value publicFunctor;
                         // Apply 'self' to get the actual user facing argument(s)
+
+                        state->forceFunction(*f->value, currPos, "__functor must be a function.");
+                        std::cout << "__functor is a function" << std::endl;
+
+                        std::cout << "Trying to apply self from '__functor: self ...'" << std::endl;
                         state->callFunction(*f->value, vTmp, publicFunctor, currPos);
 
+                        std::cout << "publicFunctor: ";
+                        std::cout << describe(publicFunctor) << std::endl;
+                        try {
+                            state->forceFunction(publicFunctor, currPos, "functor must take at least two arguments. Value is not a function.");
+                            state->forceFunction(publicFunctor, publicFunctor.lambda.fun->getPos(), "functor must take at least two arguments. Value is not a function.");
+                        }catch(nix::Error &e){
+                            std::cout << "While applying self to __functor: \n" << e.msg() << std::endl;
+                            // Sometimes functors expect to be called with functions.
+                            // e.g __functor: self f; where f is a function.
+                            // Since we supply f = int(128) the end of unwrapping is reached.
+                        }
+                        
                         // Collect information about the public interface of the functor
-                        state->forceFunction(publicFunctor, currPos, "functor must take at least two arguments. Value is not a function.");
                         LambdaIntrospection info = introspectLambda(publicFunctor,state);
+
                         info.type = "functor";
 
                         result.emplace(counter, info);
 
                         // Unwrap the next lambda.
-                        vTmp = callFnWithAutoAttrs(publicFunctor, state, info.formals);
+                        vTmp = callFnWithAutoAttrs(publicFunctor, state, info.formals, dummies);
 
                     }else{
                         // return if we got just an attrset
@@ -539,7 +566,8 @@ std::unordered_map<uint,LambdaIntrospection> unwrapLambda(nix::Value lambdaOrFun
                         // Write the lambda info to the result 
                         result.emplace(counter, info);
                         // Unwrap the next lambda.
-                        vTmp = callFnWithAutoAttrs(vTmp, state, info.formals);
+
+                        vTmp = callFnWithAutoAttrs(vTmp, state, info.formals, dummies);
                     }
                     
                     // Primop and primopApp are not unwrapped.
@@ -657,9 +685,10 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                 // We will add them as is
 
                 state->forceFunction(*test, noPos, "error");
+                posIdx = test->lambda.fun->getPos();
+                state->forceFunction(*test, posIdx, "error");
 
                 displayLambda(test, state);
-                posIdx = test->lambda.fun->getPos();
                 type = std::string("lambda");
                 // If the value is a lambda then we want to unwrap it until we get something else
                 if(attrPath.back().name.value_or("") != "__functor"){

@@ -2,10 +2,36 @@ let
   pkgs = import <nixpkgs> {};
 in
 rec {
-  # inherit (pkgs.stdenv) mkDerivation;
-  inherit (pkgs.lib) makeScopeWithSplicing';
 
-  # fn = 
+  # foo = "This is an error";
+
+
+
+ 
+  # inherit (pkgs.lib) mirrorFunctionArgs; #) makeScopeWithSplicing';
+
+  # setFunctionArgs = f: args:
+  #   { 
+  #     __functor = self: a: b: c: 1;
+  #     # __functionArgs = args;
+  #   };  
+
+
+
+  # functionArgs = f:
+  #   if f ? __functor
+  #   then f.__functionArgs or (functionArgs (f.__functor f))
+  #   else builtins.functionArgs f;
+
+  # mirrorFunctionArgs' =
+  #   f:
+  #   let
+  #     fArgs = functionArgs f;
+  #   in
+  #   g:
+  #   setFunctionArgs g fArgs;
+
+  # fn =  
   #   x: 
   #   {pkgs ,lib ? pkgs.lib, ...}:
   #   { 
@@ -21,9 +47,36 @@ rec {
   # f = map;
   # g = map (x: x);
   # fix = f: let x = f x; in x;
+
+  # Simple case:
+
   # f = {
-  #   __functor = s: {a,b}: {x,y}: true;
+  #   __functor = self: {a,b}: {x,y}: true;
   # };
+
+  # Functions that return operate on functions:
+
+  # toFunctor
+  g = f: h: {
+    __functor = self: f;
+  };
+
+  # cross (infinite) recursion 
+  # a Any->b Any-> a ....
+  a = _: b;
+  b = _: a;
+
+  # setFunctionArgs
+  # setFunctionArgs = f: args:
+  #   { 
+  #     __functor = self: f;
+  #     __functionArgs = args;
+  #   };
+
+  # mirrorFunctionArgs = f:
+
+
+  
   # inherit (pkgs) lib;
 
   # fn = args@{b,c ? {},d, ...}: x: c: d: 1;
