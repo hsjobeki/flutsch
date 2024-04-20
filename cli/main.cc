@@ -141,7 +141,8 @@ int main(int argc, char **argv) {
     return handleExceptions(argv[0], [&]() {
         initNix();
         initGC();
-        // /* FIXME: The build hook in conjunction with import-from-derivation is
+        // /* FIXME: The build hook in conjunction with import-from-derivation
+        // is
         //  * causing "unexpected EOF" during eval */
         settings.builders = "";
 
@@ -162,18 +163,13 @@ int main(int argc, char **argv) {
         if (cliArgs.releaseExpr == "")
             throw UsageError("no expression specified");
 
-        
-
-        
         json config({});
-        if( cliArgs.config.has_value() ){
+        if (cliArgs.config.has_value()) {
             std::cout << cliArgs.config.value() << std::endl;
             std::ifstream f(cliArgs.config.value());
-            config = json::parse(f, nullptr,true,true);
+            config = json::parse(f, nullptr, true, true);
         }
         std::cout << config << std::endl;
-
-
 
         if (cliArgs.gcRootsDir == "") {
             printMsg(lvlError, "warning: `--gc-roots-dir' not specified");
@@ -184,28 +180,21 @@ int main(int argc, char **argv) {
         if (cliArgs.showTrace) {
             loggerSettings.showTrace.assign(true);
         }
-        
+
+        std::cout << cliArgs.evalStoreUrl.value_or("<<>>") << std::endl;
+
         std::cout << cliArgs.releaseExpr << std::endl;
 
-    
         std::optional<std::vector<std::string>> emptyList({});
-        auto flutsch_conf = flutsch::Config {
+        auto flutsch_conf = flutsch::Config{
             config.value("useRecurseIntoAttrs", emptyList),
             // emptyList,
-            cliArgs.releaseExpr,
-            cliArgs.config,
-            cliArgs.gcRootsDir,
-            cliArgs.flake,
-            cliArgs.fromArgs,
-            cliArgs.showTrace,
-            cliArgs.impure,
-            cliArgs.checkCacheStatus,
-            cliArgs.nrWorkers,
-            cliArgs.maxMemorySize,
-            cliArgs.lockFlags
-        };
+            cliArgs.releaseExpr, cliArgs.config, cliArgs.gcRootsDir,
+            cliArgs.flake, cliArgs.fromArgs, cliArgs.showTrace, cliArgs.impure,
+            cliArgs.checkCacheStatus, cliArgs.nrWorkers, cliArgs.maxMemorySize,
+            cliArgs.lockFlags};
         std::cout << "rootDir" << cliArgs.gcRootsDir << std::endl;
 
-        flutsch::getPositions(cliArgs,flutsch_conf);
+        flutsch::getPositions(cliArgs, flutsch_conf);
     });
 }

@@ -62,6 +62,16 @@ struct FormalIntrospection {
     std::string name;
     std::optional<Pos> pos;
     bool required;
+
+    bool operator<(const FormalIntrospection &other) const {
+        if (name != other.name) return name < other.name;
+        if (pos != other.pos) return pos < other.pos;
+        return required < other.required;
+    }
+
+    bool operator==(const FormalIntrospection &other) const {
+        return name == other.name && pos == other.pos && required == other.required;
+    }
 };
 
 struct LambdaIntrospection {
@@ -69,6 +79,19 @@ struct LambdaIntrospection {
     std::optional<Pos> pos;
     std::optional<std::string> arg;
     std::optional<std::vector<FormalIntrospection>> formals;
+
+    bool operator<(const LambdaIntrospection &other) const {
+        if (type != other.type) return type < other.type;
+        if (pos != other.pos) return pos < other.pos;
+        if (arg != other.arg) return arg < other.arg;
+        if (formals && other.formals) return *formals < *other.formals;
+        return !formals && other.formals; // nullopt is considered less than any value
+    }
+
+    bool operator==(const LambdaIntrospection &other) const {
+        return type == other.type && pos == other.pos && arg == other.arg &&
+               formals == other.formals; // std::optional handles comparison of std::vector properly if present
+    }
 };
 
 struct ValueIntrospection {

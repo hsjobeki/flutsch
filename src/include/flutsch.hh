@@ -8,6 +8,7 @@
 #include <optional>
 #include <unordered_map>
 #include <vector>
+#include "eval.hh"
 
 using namespace nix;
 
@@ -21,6 +22,7 @@ struct Config {
     std::string releaseExpr;
     std::optional<std::string> config;
     Path gcRootsDir;
+
     bool flake = false;
     bool fromArgs = false;
     bool showTrace = false;
@@ -38,6 +40,22 @@ struct Config {
 
 void getPositions(MixEvalArgs &args, flutsch::Config const &config);
 
+void recurseValues(std::vector<AttrEntry> attrPath, nix::Value *testAttrs);
+
+class Analyzer {
+
+  private:
+    nix::ref<EvalState> state;
+    nix::Value *vRoot;
+
+  public:
+    
+    explicit Analyzer(MixEvalArgs &args, flutsch::Config config);
+
+    void init_root_value(MixEvalArgs &args, flutsch::Config config);
+
+};
 }; // namespace flutsch
+
 
 #endif // FLUTSCH_H

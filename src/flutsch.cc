@@ -106,44 +106,28 @@ std::vector<std::string> attrPathToPath(std::vector<AttrEntry> path) {
     return result;
 }
 
-static std::pair<std::string,std::optional<std::string>> errorInfo(nix::Error *error) {
+static std::pair<std::string, std::optional<std::string>>
+errorInfo(nix::Error *error) {
     if (nullptr != dynamic_cast<nix::RestrictedPathError *>(error)) {
         return {std::string("RestrictedPathError"), error->msg()};
     } else if (nullptr != dynamic_cast<nix::MissingArgumentError *>(error)) {
-        return {std::string("MissingArgumentError"),{}};
+        return {std::string("MissingArgumentError"), {}};
     } else if (nullptr != dynamic_cast<nix::UndefinedVarError *>(error)) {
-        return {std::string("UndefinedVarError"),{}};
+        return {std::string("UndefinedVarError"), {}};
     } else if (nullptr != dynamic_cast<nix::TypeError *>(error)) {
-        return {std::string("TypeError"),{}};
+        return {std::string("TypeError"), {}};
     } else if (nullptr != dynamic_cast<nix::Abort *>(error)) {
-        return {std::string("Abort"),{}};
+        return {std::string("Abort"), {}};
     } else if (nullptr != dynamic_cast<nix::ThrownError *>(error)) {
         return {std::string("Throw"), error->info().msg.str()};
     } else if (nullptr != dynamic_cast<nix::AssertionError *>(error)) {
-        return {std::string("AssertionError"),{}};
+        return {std::string("AssertionError"), {}};
     } else if (nullptr != dynamic_cast<nix::ParseError *>(error)) {
-        return {std::string("ParseError"),{}};
+        return {std::string("ParseError"), {}};
     } else if (nullptr != dynamic_cast<nix::EvalError *>(error)) {
-        return {std::string("EvalError"),{}};
+        return {std::string("EvalError"), {}};
     } else {
-        return {std::string("Error"),{}};
-    }
-}
-
-void displaySet(const std::set<std::string> &s) {
-    // Printing the elements of
-    // the set
-    for (auto itr : s) {
-        std::cout << itr << " ";
-    }
-}
-void displaySet(const std::set<std::vector<AttrEntry>> &s) {
-    // Printing the elements of
-    // the set
-    for (auto itr : s) {
-        for (auto e : itr) {
-            std::cout << e << " ";
-        }
+        return {std::string("Error"), {}};
     }
 }
 
@@ -210,39 +194,15 @@ std::optional<Pos> getPos(ref<EvalState> state, const PosIdx &posIdx) {
         return {};
     }
 
-    if (auto path = std::get_if<SourcePath>(&pos.origin)) {
+    if (std::get_if<SourcePath>(&pos.origin) != nullptr) {
         return {pos};
     }
 
     std::cout << "Warning: unsupported Nix source. Only files "
-                 "are suported. "
+                 "are suported yet. "
               << std::endl;
     return {};
 }
-
-// json LambdaIntrospectionToJson(std::optional<LambdaIntrospection> meta) {
-//     if (!meta.has_value()) {
-//         json j_null;
-//         return j_null;
-//     }
-//     meta = meta.value();
-    
-//     meta.value().arg;
-//     if(meta.value().formals.has_value()){
-//         for(auto formal: meta.value().formals.value()):{
-//         }
-//     }
-
-//     meta.value().pos;
-//     meta.value().type;
-//     // auto source = std::optional<std::string>({});
-//     // if (auto path = std::get_if<SourcePath>(&pos.value().origin)) {
-//     //     source = path->path.c_str();
-//     // }
-//     return json::object({{"column", pos.value().column},
-//                          {"line", pos.value().line},
-//                          {"file", source}});
-// }
 
 json posToJson(std::optional<Pos> pos) {
     if (!pos.has_value()) {
@@ -258,15 +218,14 @@ json posToJson(std::optional<Pos> pos) {
                          {"file", source}});
 }
 
-json attrEntryToJson(const AttrEntry& entry) {
-    return json::object({
-        {"name", entry.name},
-        {"pos", posToJson(entry.bindPos)},
-        {"is_root", entry.isRoot}
-    });
+json attrEntryToJson(const AttrEntry &entry) {
+    return json::object({{"name", entry.name},
+                         {"pos", posToJson(entry.bindPos)},
+                         {"is_root", entry.isRoot}});
 }
 
-json childrenToJson(std::unordered_map<std::string, const AttrEntry>& children) {
+json childrenToJson(
+    std::unordered_map<std::string, const AttrEntry> &children) {
     json list = json::array({});
     for (auto child : children) {
         list.push_back(attrEntryToJson(child.second));
@@ -274,143 +233,146 @@ json childrenToJson(std::unordered_map<std::string, const AttrEntry>& children) 
     return list;
 }
 
-json formalIntrospectionToJson(FormalIntrospection & formal) {
-    return json::object({
-        {"name", formal.name},
-        {"pos", posToJson(formal.pos)},
-        {"required", formal.required}
-    });
+json formalIntrospectionToJson(FormalIntrospection &formal) {
+    return json::object({{"name", formal.name},
+                         {"pos", posToJson(formal.pos)},
+                         {"required", formal.required}});
 }
 
-json lambdaIntrospectionToJson(LambdaIntrospection & meta) {
-    json j = json::object({
-        {"type", meta.type},
-        {"pos", posToJson(meta.pos)},
-        {"arg", meta.arg},
-        {"formals", json::array({})}
-    });
+json lambdaIntrospectionToJson(LambdaIntrospection &meta) {
+    json j = json::object({{"type", meta.type},
+                           {"pos", posToJson(meta.pos)},
+                           {"arg", meta.arg},
+                           {"formals", json::array({})}});
 
-    if(meta.formals.has_value()){
-        for(auto formal: meta.formals.value()){
+    if (meta.formals.has_value()) {
+        for (auto formal : meta.formals.value()) {
             j["formals"].push_back(formalIntrospectionToJson(formal));
         }
     }
     return j;
 }
 
-json lambdaMapToJson(std::optional<std::unordered_map<uint,LambdaIntrospection>> & lambdas) {
-    if(!lambdas.has_value()){
+json lambdaMapToJson(
+    std::optional<std::unordered_map<uint, LambdaIntrospection>> &lambdas) {
+    if (!lambdas.has_value()) {
         json j_null;
         return j_null;
     }
 
     json j = json::object({});
     for (auto &i : lambdas.value()) {
-        j[std::to_string(i.first)]=lambdaIntrospectionToJson(i.second);
+        j[std::to_string(i.first)] = lambdaIntrospectionToJson(i.second);
     }
     return j;
 }
 
-
-void displayFormals(std::vector<FormalIntrospection> & formals){
-    for (auto &i : formals){
+void displayFormals(std::vector<FormalIntrospection> &formals) {
+    for (auto &i : formals) {
         std::cout << "\tFormal: " << i.name << " - ";
 
-        if(i.pos.has_value()){
+        if (i.pos.has_value()) {
             std::cout << i.pos.value();
-        }else{ 
+        } else {
             std::cout << "noPos";
         }
-        
-        std::cout << " - " << (i.required ? std::string("(required)") : std::string("(optional)")) << std::endl;
+
+        std::cout << " - "
+                  << (i.required ? std::string("(required)")
+                                 : std::string("(optional)"))
+                  << std::endl;
     }
 }
 
-
-
-void displayUnwrappedLambda(std::unordered_map<uint,LambdaIntrospection> & res){
+void displayUnwrappedLambda(
+    std::unordered_map<uint, LambdaIntrospection> &res) {
     std::cout << "displayUnwrappedLambda" << std::endl;
-    for (auto &i : res){
+    for (auto &i : res) {
         std::cout << "---" << std::endl;
         std::cout << i.second.type << ": " << i.first << " - ";
 
-        if(i.second.pos.has_value()){
+        if (i.second.pos.has_value()) {
             std::cout << i.second.pos.value();
-        }else{
+        } else {
             std::cout << "noPos";
         }
-        
+
         std::cout << std::endl;
 
-        if(i.second.arg.has_value()){
+        if (i.second.arg.has_value()) {
             std::cout << "- Arg: " << i.second.arg.value() << std::endl;
         }
-        if(i.second.formals.has_value()){
+        if (i.second.formals.has_value()) {
             displayFormals(i.second.formals.value());
         }
         std::cout << "---" << std::endl;
     }
 }
 
-
-std::uintptr_t getPtr(Value *value) {
-    std::uintptr_t ptr_val = reinterpret_cast<std::uintptr_t>(value);
+std::uintptr_t getPtr(Value &value) {
+    std::uintptr_t ptr_val = reinterpret_cast<std::uintptr_t>(&value);
     return ptr_val;
 }
 
+bool startsWithDoubleUnderscore(const std::string &str) {
+    if (str.length() >= 2) {
+        return str.substr(0, 2) == "__";
+    }
+    return false;
+}
 
-std::string describe(Value &v){
+std::string describe(Value &v) {
 
-    if(v.isLambda()){
+    if (v.isLambda()) {
         return "lambda";
     }
-    if(v.isPrimOp()){
+    if (v.isPrimOp()) {
         return "primop - " + v.primOp->name;
     }
-    if(v.isPrimOpApp()){
+    if (v.isPrimOpApp()) {
         return "primopApp - " + v.primOpAppPrimOp()->name;
     }
-    if(v.isList()){
+    if (v.isList()) {
         return "list";
     }
     auto repr = showType(v.type());
     return std::string(repr);
 }
 
-
-typedef std::vector<SharedValueRef> SharedValueRefs;
 typedef std::shared_ptr<nix::Value> SharedValueRef;
+typedef std::vector<SharedValueRef> SharedValueRefs;
 
 // Call a function with autoArgs
 // - {a, ...}: attrset with all required formals set to true
 // - a: single argument value
-nix::Value callFnWithAutoAttrs(
-        nix::Value &value, 
-        ref<EvalState> state, 
-        std::optional<std::vector<FormalIntrospection>> formals, 
-        SharedValueRefs &dummies
-    )
-    {
-    if(!value.isLambda()){
-        std::cout << "callFnWithAutoAttrs: cannot be called with " << describe(value) << std::endl;
+nix::Value
+callFnWithAutoAttrs(nix::Value &value, ref<EvalState> state,
+                    std::optional<std::vector<FormalIntrospection>> formals,
+                    SharedValueRefs &sharedArgs) {
+    if (!value.isLambda()) {
+        std::cout << "callFnWithAutoAttrs: cannot be called with "
+                  << describe(value) << std::endl;
         return value;
     }
     PosIdx currPos = value.lambda.fun->getPos();
 
-
     Value res;
-    std::shared_ptr<nix::Value> applyArg = dummies.back(); 
-    if(!value.lambda.fun->hasFormals()){
-        // If the function has no formals, we can just pass some value i.e. some int.
+
+    std::shared_ptr<nix::Value> applyArg = sharedArgs.back();
+    if (!value.lambda.fun->hasFormals()) {
+        // If the function has no formals, we can just pass some value i.e. some
+        // int.
         applyArg->mkInt(128);
         state->callFunction(value, *applyArg.get(), res, currPos);
-    }else{
-        // If the function has formals, we need to pass an attrset with at least all required formals
+    } else {
+        // If the function has formals, we need to pass an attrset with at least
+        // all required formals
         auto attrs = state->buildBindings(formals.value().size());
-        for (auto & i : formals.value()){
-            if(i.required){
+        for (auto &i : formals.value()) {
+            if (i.required) {
                 // Unwrap with each required formal set to a boolean
-                // TODO: configure via flutsch config, which value to use for unwrapping.
+                // TODO: configure via flutsch config, which value to use for
+                // unwrapping.
                 attrs.alloc(i.name, noPos).mkBool(i.required);
             }
         }
@@ -420,24 +382,24 @@ nix::Value callFnWithAutoAttrs(
     return res;
 }
 
-
 LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
-    if(!value.isLambda()){
-        std::cout << "introspectLambda: called with non lambda value " << value.type() << std::endl; 
+    if (!value.isLambda()) {
+        std::cout << "introspectLambda: called with non lambda value "
+                  << value.type() << std::endl;
         return {};
     }
-        
-    PosIdx currPos = value.lambda.fun->getPos();    
+
+    PosIdx currPos = value.lambda.fun->getPos();
     std::optional<std::string> arg;
     std::optional<std::vector<FormalIntrospection>> formals = {};
     // Collect informations about the current lambda
     // -----------------------------------------
     // 1. argument name if it has one
-    if(!value.lambda.fun->hasFormals()) {
+    if (!value.lambda.fun->hasFormals()) {
         arg = state->symbols[value.lambda.fun->arg];
     }
     // 2. all formals, if it has formals.
-    if(value.lambda.fun->hasFormals()) {
+    if (value.lambda.fun->hasFormals()) {
         // A formal looks like this:
         //
         // {a, b, ... }@args: body
@@ -451,18 +413,20 @@ LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
         // TODO: can we add the name of @args?
         std::vector<FormalIntrospection> formalsResult;
 
-        for (Formal formal : value.lambda.fun->formals->formals ) {
+        for (Formal formal : value.lambda.fun->formals->formals) {
             // Find out if the formal is required
             Value reqValue;
             reqValue.mkBool(formal.def);
             bool required = !reqValue.boolean;
 
-            formalsResult.push_back(FormalIntrospection({state->symbols[formal.name],getPos(state,formal.pos), required}));
+            formalsResult.push_back(
+                FormalIntrospection({state->symbols[formal.name],
+                                     getPos(state, formal.pos), required}));
         }
 
         // Add the ellipsis at the end if exists
-        if(value.lambda.fun->formals->ellipsis){
-            formalsResult.push_back(FormalIntrospection({"...",{}, false}));
+        if (value.lambda.fun->formals->ellipsis) {
+            formalsResult.push_back(FormalIntrospection({"...", {}, false}));
         }
 
         formals.emplace(formalsResult);
@@ -471,136 +435,218 @@ LambdaIntrospection introspectLambda(Value &value, ref<EvalState> state) {
     // 3. the source position
     auto pos = getPos(state, currPos);
 
-    return LambdaIntrospection({"lambda",pos,arg,formals});
+    return LambdaIntrospection({"lambda", pos, arg, formals});
 }
 
-std::unordered_map<uint,LambdaIntrospection> unwrapLambda(nix::Value lambdaOrFunctor, ref<EvalState> state) {
+std::unordered_map<uint, LambdaIntrospection>
+unwrapLambda(nix::Value lambdaOrFunctor, ref<EvalState> state) {
     // The result of the lambda will be stored in vTmp
     Value vTmp = lambdaOrFunctor;
-    
-    // SharedValueRefs 
 
+    // A set of results from the unwrapping process.
+    // If encountering a value that is already unwrapped,
+    // stop unwrapping, since this'd be a loop.
+    std::set<LambdaIntrospection> vResSet;
 
     PosIdx currPos;
     Symbol sFunctor = state->symbols.create("__functor");
 
-    // A list of dummy values. 
-    // Also if we get one of the dummies back we know that we cannot unwrap further.
-    SharedValueRefs dummies;
-    
+    // A list of Arguments that have been used to unwrapped any lambda.
+    // This list is important to keep track of the references, because otherwise
+    // they could be dropped. Example when a reference could be dropped:
+    // ```
+    // g = f: { __functor = self: f; }
+    // ```
+    // If we apply `g 128` f = 128
+    // we now unwrap the lambda `self: f` we need to get `f = nixValue(128)`
+    // If we would not keep track of the reference of 'f = ...',
+    // the reference to nixValue(128) could be dropped and result in segfault
+    // when accessing '__functor self'
+    SharedValueRefs sharedArgs;
 
-    std::unordered_map<uint,LambdaIntrospection> result;
+    std::unordered_map<uint, LambdaIntrospection> result;
     int counter = 0;
-    while(true){
+    while (true) {
         try {
-            std::cout << "C: " << counter << " - Type: " << describe(vTmp) << std::endl;
-            // TODO: find a better way for unwrapping limit.
-            // We cannot really compare pointers
+            // std::cout << "C: " << counter << " - Type: " << describe(vTmp) <<
+            // std::endl;
 
-            if(counter >= 10 ){
-                std::cout << "STOP: max recursion depth" << std::endl;
+            if (counter >= 10) {
+                // std::cout << "Max argument depth (10) reached" << std::endl;
                 return result;
             }
-            
-            std::shared_ptr<nix::Value> sharedArg = std::make_shared<nix::Value>();
-            dummies.push_back(sharedArg);
 
-            std::cout << "pushed new shared applyArgument " << " - " << dummies.size() << std::endl;
+            SharedValueRef sharedArg = std::make_shared<nix::Value>();
+            sharedArgs.push_back(sharedArg);
+
+            // std::cout << "created new shared applyArgument " << " - total: "
+            // << sharedArgs.size() << std::endl;
 
             switch (vTmp.type()) {
-                case nAttrs: {
-                    std::cout << "attrs" << std::endl;
-                    // state->forceAttrs(vTmp, currPos, "unwrapped value is not an attribute set.");
-                    Attr * f = vTmp.attrs->get(sFunctor);
-                    if(f != nullptr){
-                        std::cout << "is functor" << std::endl;
-                        // The Attribute set is a functor. (self: x: body)
-                        currPos = f->pos;
-                        std::cout << "has pos" << std::endl;
+            case nAttrs: {
+                // std::cout << "attrs" << std::endl;
+                // state->forceAttrs(vTmp, currPos, "unwrapped value is not an
+                // attribute set.");
+                Attr *f = vTmp.attrs->get(sFunctor);
+                if (f != nullptr) {
+                    // The Attribute set is a functor. (self: x: body)
+                    currPos = f->pos;
 
-                        Value publicFunctor;
-                        // Apply 'self' to get the actual user facing argument(s)
+                    Value publicFunctor;
+                    // Apply 'self' to get the actual user facing argument(s)
 
-                        state->forceFunction(*f->value, currPos, "__functor must be a function.");
-                        std::cout << "__functor is a function" << std::endl;
+                    state->forceFunction(*f->value, currPos,
+                                         "__functor must be a function.");
 
-                        std::cout << "Trying to apply self from '__functor: self ...'" << std::endl;
-                        state->callFunction(*f->value, vTmp, publicFunctor, currPos);
+                    std::cout
+                        << "Trying to apply self from '__functor: self ...'"
+                        << std::endl;
+                    state->callFunction(*f->value, vTmp, publicFunctor,
+                                        currPos);
 
-                        std::cout << "publicFunctor: ";
-                        std::cout << describe(publicFunctor) << std::endl;
-                        try {
-                            state->forceFunction(publicFunctor, currPos, "functor must take at least two arguments. Value is not a function.");
-                            state->forceFunction(publicFunctor, publicFunctor.lambda.fun->getPos(), "functor must take at least two arguments. Value is not a function.");
-                        }catch(nix::Error &e){
-                            std::cout << "While applying self to __functor: \n" << e.msg() << std::endl;
-                            // Sometimes functors expect to be called with functions.
-                            // e.g __functor: self f; where f is a function.
-                            // Since we supply f = int(128) the end of unwrapping is reached.
-                        }
-                        
-                        // Collect information about the public interface of the functor
-                        LambdaIntrospection info = introspectLambda(publicFunctor,state);
-
-                        info.type = "functor";
-
-                        result.emplace(counter, info);
-
-                        // Unwrap the next lambda.
-                        vTmp = callFnWithAutoAttrs(publicFunctor, state, info.formals, dummies);
-
-                    }else{
-                        // return if we got just an attrset
-                        return result;
+                    std::cout << "publicFunctor: ";
+                    std::cout << describe(publicFunctor) << std::endl;
+                    try {
+                        state->forceFunction(
+                            publicFunctor, currPos,
+                            "functor must take at least two arguments. Value "
+                            "is not a function.");
+                        state->forceFunction(
+                            publicFunctor, publicFunctor.lambda.fun->getPos(),
+                            "functor must take at least two arguments. Value "
+                            "is not a function.");
+                    } catch (nix::Error &e) {
+                        std::cout << "While applying self to __functor: \n"
+                                  << e.msg() << std::endl;
+                        // Sometimes functors expect to be called with
+                        // functions. e.g __functor: self f; where f is a
+                        // function. Since we supply f = int(128) the end of
+                        // unwrapping is reached.
                     }
-                    break;
-                }
-                case nFunction: {
-                    // state->forceFunction(vTmp, currPos, "unwrapped value is not a function.");
-                    currPos = noPos;
-                    if(vTmp.isLambda()){
-                        std::cout << "lambda" << std::endl;
 
-                        currPos = vTmp.lambda.fun->pos;
-                        LambdaIntrospection info = introspectLambda(vTmp,state);
-                        // Write the lambda info to the result 
-                        result.emplace(counter, info);
-                        // Unwrap the next lambda.
+                    // Collect information about the public interface of the
+                    // functor
+                    LambdaIntrospection info =
+                        introspectLambda(publicFunctor, state);
 
-                        vTmp = callFnWithAutoAttrs(vTmp, state, info.formals, dummies);
-                    }
-                    
-                    // Primop and primopApp are not unwrapped.
-                    // TODO: e.g. head [ (x: x) ] returns another lambda. 
-                    if(vTmp.isPrimOp()){
-                        std::cout << "primop" << std::endl;
+                    info.type = "functor";
 
-                    }
-                    if(vTmp.isPrimOpApp()){
-                        std::cout << "primopApp" << std::endl;
-                    }
-                    break;
-                }
-                default:
-                    std::cout << "STOP: cannot unwrap: " << vTmp.type() << std::endl;
+                    result.emplace(counter, info);
+                    vResSet.insert(info);
+
+                    // Unwrap the next lambda.
+                    vTmp = callFnWithAutoAttrs(publicFunctor, state,
+                                               info.formals, sharedArgs);
+
+                } else {
+                    // return if we got just an attrset
                     return result;
+                }
+                break;
+            }
+            case nFunction: {
+                // state->forceFunction(vTmp, currPos, "unwrapped value is not a
+                // function.");
+                currPos = noPos;
+                if (vTmp.isLambda()) {
+
+                    currPos = vTmp.lambda.fun->pos;
+                    LambdaIntrospection info = introspectLambda(vTmp, state);
+
+                    if (vResSet.find(info) != vResSet.end()) {
+                        // If the lambda has already been introspection, stop
+                        // unwrapping.
+                        std::cout << "STOP: lambda introspection already exists"
+                                  << std::endl;
+                        break;
+                    }
+                    // Write the lambda info to the result
+                    result.emplace(counter, info);
+                    vResSet.insert(info);
+                    // Unwrap the next lambda.
+
+                    vTmp = callFnWithAutoAttrs(vTmp, state, info.formals,
+                                               sharedArgs);
+                }
+
+                // Primop and primopApp are not unwrapped.
+                // TODO: e.g. head [ (x: x) ] returns another lambda.
+
+                // if(vTmp.isPrimOp()){
+                //     std::cout << "primop" << std::endl;
+
+                // }
+                // if(vTmp.isPrimOpApp()){
+                //     std::cout << "primopApp" << std::endl;
+                // }
+                break;
+            }
+            default:
+                std::cout << "STOP: cannot unwrap: " << vTmp.type()
+                          << std::endl;
+                return result;
             }
 
-            //Security mechanism to avoid loops for now
-            if(counter >= 10 ){
+            // Security mechanism to avoid loops for now
+            if (counter >= 10) {
                 return result;
             }
 
             state->forceValue(vTmp, currPos);
-            std::cout << "Unwrapped lambda: " <<  counter << " - continue" << std::endl;
             counter++;
 
-        }catch(nix::Error &e){
-            std::cout << "STOP - Cannot unwrap further - " << e.msg() << std::endl;
+        } catch (nix::Error &e) {
+            std::cout << "STOP - Cannot unwrap further - " << e.msg()
+                      << std::endl;
             return result;
         }
     }
 }
+
+Analyzer::Analyzer(nix::MixEvalArgs &args, flutsch::Config config)
+    : state(std::make_shared<EvalState>(args.searchPath,
+                                        openStore(*args.evalStoreUrl))) {
+
+    // TODO: move to init_root_from_args
+    // We do this to allow for parallel initialization of the root value for unit tests
+
+    // Bindings &autoArgs = *args.getAutoArgs(*state);
+
+    // vRoot = [&]() {
+    //     if (config.flake) {
+    //         auto [flakeRef, fragment, outputSpec] =
+    //             parseFlakeRefWithFragmentAndExtendedOutputsSpec(
+    //                 config.releaseExpr, absPath("."));
+    //         InstallableFlake flake{
+    //             {}, state, std::move(flakeRef), fragment, outputSpec,
+    //             {}, {},    config.lockFlags};
+
+    //         return flake.toValue(*state).first;
+    //     } else {
+    //         return releaseExprTopLevelValue(*state, autoArgs, config);
+    //     }
+    // }();
+
+    // if (vRoot->type() != nAttrs) {
+    //     throw EvalError("Top level attribute is not an attrset");
+    // }
+}
+
+// Introspect the root value
+// - Adds the root value to the data map
+// void init_root() const {
+//     auto posIdx = vRoot->attrs->pos;
+
+//     auto rootKey = AttrEntry(vRoot, "<root>", state->positions[posIdx]);
+
+//     rootKey.isRoot = true;
+
+//     auto initPath = std::vector<AttrEntry>({rootKey});
+//     // self.data.emplace(rootKey, ValueIntrospection({"<root>"}));
+// }
+// introspectValue(initPath, vRoot);
+// std::cout << "Root introspection done" << std::endl;
+// recurseValues(initPath, vRoot);
 
 void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     std::cout << "positionsEval" << std::endl;
@@ -648,7 +694,8 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                 displayAttrs(test, state);
                 posIdx = test->attrs->pos;
                 type = std::string("attrset");
-                Attr *functor = test->attrs->get(state->symbols.create("__functor"));
+                Attr *functor =
+                    test->attrs->get(state->symbols.create("__functor"));
                 if (functor != nullptr) {
                     std::cout << "is functor" << std::endl;
                     type = std::string("attrset/functor");
@@ -658,17 +705,22 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
 
                     displayUnwrappedLambda(meta);
                 }
-                // If the value is an attrset, add all its attributes as children
-                for (auto &i : test->attrs->lexicographicOrder(state->symbols)) {
+                // If the value is an attrset, add all its attributes as
+                // children
+                for (auto &i :
+                     test->attrs->lexicographicOrder(state->symbols)) {
                     const std::string &name = state->symbols[i->name];
+                    const PosIdx childPos = i->pos;
 
                     if (data != valueMap.end()) {
-                        if (auto p = getPos(state, posIdx)) {
-                            const auto attrEntry = AttrEntry(i->value, name, *p);
-                            data->second.children.emplace(name,attrEntry);
-                        }else{
-                            const auto attrEntry = AttrEntry(i->value, name, {});
-                            data->second.children.emplace(name,attrEntry);
+                        if (auto p = getPos(state, childPos)) {
+                            const auto attrEntry =
+                                AttrEntry(i->value, name, *p);
+                            data->second.children.emplace(name, attrEntry);
+                        } else {
+                            const auto attrEntry =
+                                AttrEntry(i->value, name, {});
+                            data->second.children.emplace(name, attrEntry);
                         }
                     }
                 }
@@ -690,43 +742,79 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
 
                 displayLambda(test, state);
                 type = std::string("lambda");
-                // If the value is a lambda then we want to unwrap it until we get something else
-                if(attrPath.back().name.value_or("") != "__functor"){
+                // If the value is a lambda then we want to unwrap it until we
+                // get something else
+                if (attrPath.back().name.value_or("") != "__functor") {
                     auto meta = unwrapLambda(*test, state);
                     data->second.lambdaIntrospections.emplace(meta);
                     displayUnwrappedLambda(meta);
-                }else{
-                    std::cout << "Skipping functor. Those are handled separately" << std::endl;
+                } else {
+                    std::cout << "Skipping functor. Those are handled under "
+                                 "attribute sets"
+                              << std::endl;
                 }
             }
 
             if (data != valueMap.end()) {
+
                 if (auto p = getPos(state, posIdx)) {
                     data->second.valuePos.emplace(*p);
                 } else {
                     data->second.valuePos.reset();
                 }
 
-
                 std::string t;
                 switch (test->type()) {
-                    case nInt: t = "int"; break;
-                    case nBool: t = "bool"; break;
-                    case nString: t = "string"; break;
-                    case nPath: t = "path"; break;
-                    case nNull: t = "null"; break;
-                    case nAttrs: t = type; break;
-                    case nList: t = "list"; break;
-                    case nFunction: t = "lambda"; break;
-                    case nExternal:
-                        t = test->external->typeOf();
-                        break;
-                    case nFloat: t = "float"; break;
-                    case nThunk: t = "thunk"; break;
-                    default: t = "unknown"; break;
+                case nInt:
+                    t = "int";
+                    break;
+                case nBool:
+                    t = "bool";
+                    break;
+                case nString:
+                    t = "string";
+                    break;
+                case nPath:
+                    t = "path";
+                    break;
+                case nNull:
+                    t = "null";
+                    break;
+                // Either attrset or functor
+                case nAttrs:
+                    t = type;
+                    break;
+                case nList:
+                    t = "list";
+                    break;
+                // TODO: nFunction has lambda, primop, primopApp
+                case nFunction: {
+                    t = "unknown function type";
+                    if (test->isLambda()) {
+                        t = "lambda";
+                    }
+                    if (test->isPrimOp()) {
+                        t = "primop";
+                    }
+                    if (test->isPrimOpApp()) {
+                        t = "primopApp";
+                    }
+                    break;
+                }
+                case nExternal:
+                    t = test->external->typeOf();
+                    break;
+                case nFloat:
+                    t = "float";
+                    break;
+                case nThunk:
+                    t = "thunk";
+                    break;
+                default:
+                    t = "unknown";
+                    break;
                 }
                 data->second.valueType = t;
-                
             }
 
         } catch (nix::Error &e) {
@@ -756,6 +844,10 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     std::function<void(std::vector<AttrEntry>, nix::Value *)> recurseValues;
     recurseValues = [&](std::vector<AttrEntry> attrPath,
                         nix::Value *testAttrs) -> void {
+        if (valueMap.size() > 500) {
+            std::cout << "STOP: valueMap size > 5000." << std::endl;
+            return;
+        }
 
         for (auto &i : testAttrs->attrs->lexicographicOrder(state->symbols)) {
             // might not have a name, if its the root attrset;
@@ -775,8 +867,8 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
             // Create an entry for the attribute if none exists.
             auto entry = valueMap.find(attrEntry);
             if (entry == valueMap.end()) {
-                std::cout << "valueMap - inserting: " << attrPathJoin(path)
-                          << std::endl;
+                // std::cout << "valueMap - inserting: " << attrPathJoin(path)
+                //           << std::endl;
                 valueMap.emplace(attrEntry, ValueIntrospection(path));
                 entry = valueMap.find(attrEntry);
             }
@@ -786,18 +878,19 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
             auto parentAttrsKey = AttrEntry(testAttrs);
             auto parent = valueMap.find(parentAttrsKey);
 
-            
             if (parent != valueMap.end() && entry != valueMap.end()) {
-                std::cout << "adding: " << entry->first
-                          << " as child to: " << parent->first << std::endl;
+                // std::cout << "adding: " << entry->first
+                //           << " as child to: " << parent->first << std::endl;
                 parent->second.children.emplace(name, entry->first);
             }
 
             // Skip value if exists and is already analyzed
             if (entry != valueMap.end() && entry->second.isIntrospected) {
-                std::cout << "SKIPPING: " << attrEntry << " already analyzed - "
-                          << entry->second << std::endl;
-                // Important!: Add the attrName and link it to the already analyzed value
+                // std::cout << "SKIPPING: " << attrEntry << " already analyzed
+                // - "
+                //           << entry->second << std::endl;
+                // Important!: Add the attrName and link it to the already
+                // analyzed value
                 valueMap.emplace(attrEntry, entry->second);
                 continue;
             }
@@ -810,10 +903,44 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                 try {
                     state->forceValue(*value, noPos);
                     if (value->type() == nAttrs) {
-                        recurseValues(curAttrPath, value);
+                        bool recurse = true;
+                        Attr *drvPath =
+                            value->attrs->get(state->symbols.create("drvPath"));
+                        if (drvPath != nullptr) {
+                            // Check if drvPath is a string/path and has
+                            // context.
+                            try {
+
+                                state->forceString(
+                                    *drvPath->value, drvPath->pos,
+                                    "error drvPath is not a string");
+                            } catch (nix::Error &e) {
+                                std::cout << "drvPath is not a string"
+                                          << std::endl;
+                            }
+
+                            auto context = drvPath->value->string.context;
+                            if (context != nullptr) {
+                                std::cout
+                                    << "Skipping recursing derivation: " << name
+                                    << std::endl;
+                                recurse = false;
+                            }
+                        }
+                        if (startsWithDoubleUnderscore(name)) {
+                            recurse = false;
+                            std::cout << "Skipping recursing intern attribute: "
+                                      << name << std::endl;
+                        }
+
+                        // Dont recurse into derivations? Since they are
+                        // attribute sets from a language perspective. { drvPath
+                        // = "/nix/store/..."; <-context }
+                        if (recurse == true) {
+                            recurseValues(curAttrPath, value);
+                        }
                     }
                 } catch (nix::Error &e) {
-                    
                 }
             }
         }
@@ -827,11 +954,12 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     auto initPath = std::vector<AttrEntry>({rootKey});
     valueMap.emplace(rootKey, ValueIntrospection({"<root>"}));
     introspectValue(initPath, vRoot);
+    std::cout << "Root introspection done" << std::endl;
     recurseValues(initPath, vRoot);
 
-    std::cout << "\n---\nValueMap: \n";
-    displayValueMap(valueMap);
-    std::cout << "---\n";
+    // std::cout << "\n---\nValueMap: \n";
+    // displayValueMap(valueMap);
+    // std::cout << "---\n";
     // create an empty list []
 
     // Some pretty printing.
@@ -839,22 +967,20 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     for (auto pair : valueMap) {
         out.push_back({
             // Infos from ValueIntrospection
-            {"value", {
-                {"path", pair.second.path},
-                {"pos", posToJson(pair.second.valuePos)},
-                {"children", childrenToJson(pair.second.children)},
-                {"type", pair.second.valueType},
-                {"error", pair.second.isError},
-                {"error_description", pair.second.errorDescription},
-                {"lambda", lambdaMapToJson(pair.second.lambdaIntrospections)}
-            }},
+            {"value",
+             {{"path", pair.second.path},
+              {"pos", posToJson(pair.second.valuePos)},
+              {"children", childrenToJson(pair.second.children)},
+              {"type", pair.second.valueType},
+              {"error", pair.second.isError},
+              {"error_description", pair.second.errorDescription},
+              {"lambda", lambdaMapToJson(pair.second.lambdaIntrospections)}}},
             // Infos from AttrEntry
-            {"binding", {
-                {"pos", posToJson(pair.first.bindPos)},
-                {"name", pair.first.name},
-                {"is_root", pair.first.isRoot}
-            }},
-            
+            {"binding",
+             {{"pos", posToJson(pair.first.bindPos)},
+              {"name", pair.first.name},
+              {"is_root", pair.first.isRoot}}},
+
         });
     }
 
@@ -863,8 +989,8 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
 
     std::string filename = "values.json"; // Name of the file to create/write
 
-    // Open the file in write mode. This will create the file if it doesn't exist,
-    // or overwrite it if it does.
+    // Open the file in write mode. This will create the file if it doesn't
+    // exist, or overwrite it if it does.
     std::ofstream file(filename);
 
     if (!file.is_open()) {
@@ -874,8 +1000,8 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
     // Write the string to the file
     file << out.dump(4);
     file.close();
-    std::cout << "Success: Value introspection written to: " << filename << std::endl;
-
+    std::cout << "Success: Value introspection written to: " << filename
+              << std::endl;
 }
 
 } // namespace flutsch

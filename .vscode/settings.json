@@ -74,7 +74,15 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "valarray": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "csetjmp": "cpp",
+    "csignal": "cpp",
+    "cfenv": "cpp",
+    "complex": "cpp",
+    "netfwd": "cpp",
+    "future": "cpp",
+    "shared_mutex": "cpp",
+    "typeindex": "cpp"
   },
   "C_Cpp.default.compilerPath": "/nix/store/4cjqvbp1jbkps185wl8qnbjpf8bdy8j9-gcc-wrapper-13.2.0/bin/gcc"
 }

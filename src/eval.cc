@@ -1,7 +1,6 @@
 #include "eval.hh"
 #include <iostream>
 
-
 namespace flutsch {
 
 std::string attrPathJoin(std::vector<std::string> path);
@@ -29,14 +28,13 @@ std::ostream &operator<<(std::ostream &os, const AttrEntry &e) {
     std::stringstream ss;
 
     // Format the size_t value as a hexadecimal string
-    ss << std::hex << AttrEntryHash()(e) ;
+    ss << std::hex << AttrEntryHash()(e);
     std::string hexStr = ss.str(); // Extract the formatted string
 
-    
+    os << " @ 0x" << hexStr << ")"
+       << " - ";
 
-    os << " @ 0x" << hexStr << ")" << " - ";
-    
-    if(e.bindPos.has_value() ) {
+    if (e.bindPos.has_value()) {
         os << e.bindPos.value();
     } else {
         os << "noPos";
@@ -61,13 +59,13 @@ std::ostream &operator<<(std::ostream &os, const ValueIntrospection &e) {
             os << "\t - " << r.first << " : " << r.second << "\n";
         }
     }
-    if(e.lambdaIntrospections.has_value()) {
+    if (e.lambdaIntrospections.has_value()) {
         os << "\tnFunction introspections: \n";
-        for(auto r : e.lambdaIntrospections.value()) {
-            os << "\t - " << r.first+1 << ". " << r.second.type << ": ";
-            if(r.second.pos.has_value()) {
+        for (auto r : e.lambdaIntrospections.value()) {
+            os << "\t - " << r.first + 1 << ". " << r.second.type << ": ";
+            if (r.second.pos.has_value()) {
                 os << r.second.pos.value();
-            }else {
+            } else {
                 os << "noPos";
             }
             os << "\n";
@@ -76,7 +74,7 @@ std::ostream &operator<<(std::ostream &os, const ValueIntrospection &e) {
     return os;
 }
 
-}
+} // namespace flutsch
 
 namespace std {
 template <> struct hash<flutsch::AttrEntry> {
