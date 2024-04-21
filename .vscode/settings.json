@@ -82,7 +82,8 @@
     "netfwd": "cpp",
     "future": "cpp",
     "shared_mutex": "cpp",
-    "typeindex": "cpp"
+    "typeindex": "cpp",
+    "*.ipp": "cpp"
   },
   "C_Cpp.default.compilerPath": "/nix/store/4cjqvbp1jbkps185wl8qnbjpf8bdy8j9-gcc-wrapper-13.2.0/bin/gcc"
 }

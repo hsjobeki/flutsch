@@ -42,19 +42,35 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config);
 
 void recurseValues(std::vector<AttrEntry> attrPath, nix::Value *testAttrs);
 
+typedef std::unordered_map<AttrEntry, ValueIntrospection, AttrEntryHash>
+    FlutschMap;
+
 class Analyzer {
 
   private:
+    // Store the MixEvalArgs and Config
+    MixEvalArgs args;
+    flutsch::Config config;
+    // Global EvalState and the root value
     nix::ref<EvalState> state;
-    nix::Value *vRoot;
+    nix::Value vRoot;
+
+    // Result
+    FlutschMap data = {};
 
   public:
     
     explicit Analyzer(MixEvalArgs &args, flutsch::Config config);
 
-    void init_root_value(MixEvalArgs &args, flutsch::Config config);
+    void init_root_value();
 
+    void init_from_file();
+
+    std::string print_root_value();
+
+    void bfs_traverse();
 };
+
 }; // namespace flutsch
 
 

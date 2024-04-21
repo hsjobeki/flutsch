@@ -51,6 +51,7 @@
                 inputsFrom = [ self'.packages.flutsch ];
                 shellHook = lib.optionalString stdenv.isLinux ''
                   export NIX_DEBUG_INFO_DIRS="${pkgs.curl.debug}/lib/debug:${drvArgs.nix.debug}/lib/debug''${NIX_DEBUG_INFO_DIRS:+:$NIX_DEBUG_INFO_DIRS}"
+                  export TEST_ASSET_PATH=$(git rev-parse --show-toplevel)/test/assets
                 '';
               };
           };

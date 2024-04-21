@@ -44,51 +44,31 @@
 #include <catch2/catch_test_macros.hpp>
 #include "catch2/catch_all.hpp"
 #include <flutsch.hh>
-
-#include <iostream>
-#include <sstream>
-
-class AutoRestoreRdbuf {
-    std::ostream& out;
-    std::streambuf* old;
-
-public:
-    ~AutoRestoreRdbuf()
-    {
-        out.rdbuf(old);
-    }
-    AutoRestoreRdbuf(const AutoRestoreRdbuf&) = delete;
-    AutoRestoreRdbuf(AutoRestoreRdbuf&&) = delete;
-
-    AutoRestoreRdbuf(std::ostream& out)
-        : out { out }
-        , old { out.rdbuf() }
-    {
-    }
-};
-
-std::string stringWrittentToStream(std::function<void()> f, std::ostream& out = std::cout)
-{
-    AutoRestoreRdbuf restore { std::cout };
-    std::ostringstream oss;
-    std::cout.rdbuf(oss.rdbuf());
-    f();
-    return oss.str();
-}
+#include <cstdlib>  // for getenv
 
 using namespace nix;
 
-// struct CliArgs : nix::MixEvalArgs, nix::MixCommonArgs, RootArgs,
-// flutsch::Config {
-// };
 
-void foo()
-{
-    std::cout << "foo";
+std::string getAssetPath(const std::string& relativePath) {
+    const char* basePath = std::getenv("TEST_ASSET_PATH");
+    if (!basePath) {
+        FAIL("TEST_ASSET_PATH is not set. 'export TEST_ASSET_PATH=<abs_path_to_assets>'");  // Default path if environment variable is not set
+    }
+    return std::string(basePath) + "/" + relativePath; 
 }
 
+struct TestArgs : nix::MixEvalArgs,
+                  nix::MixCommonArgs,
+                  nix::RootArgs,
+                  flutsch::Config {
 
-void pre() {
+    TestArgs() : nix::MixCommonArgs("flutsch") {}
+};
+
+static TestArgs args;
+
+template<typename Func>
+void init(std::string test_file, Func test_fn) {
     handleExceptions("abc", [&]() {
         initNix();
         initGC();
@@ -101,32 +81,55 @@ void pre() {
         //    to the environment. */
         evalSettings.restrictEval = false;
 
-        evalSettings.pureEval = true;
+        evalSettings.pureEval = false;
 
         Path gcRootsDir;
         std::optional<std::vector<std::string>> emptyList({});
 
-        std::string releaseExpr = "./test.nix";
-        auto config = flutsch::Config{
-            emptyList,
-            releaseExpr,
-            {},
-            "",
-        };
-        std::cout << config.releaseExpr << std::endl;
+        std::string expect_file = test_file;
+        std::size_t pos = expect_file.rfind(".nix");
+        if (pos != std::string::npos) {
+            expect_file.replace(pos, 4, ".expect");
+            expect_file = getAssetPath(expect_file);
+        }
+        // Read the file content into a string
+        std::string content;
+        std::ifstream file(expect_file);
+        if (file) {
+            content = std::string((std::istreambuf_iterator<char>(file)),
+                                std::istreambuf_iterator<char>());
+            file.close();  // Close the file after reading
+        } else {
+            std::cerr << "Could not open the file: " << expect_file << std::endl;
+            FAIL("Could not open the file: " << expect_file); 
+        }
+        WARN("EXPECTED: " << content);
 
-        nix::MixEvalArgs args = nix::MixEvalArgs({});
+
+        std::string releaseExpr = getAssetPath(test_file);
+        auto config = flutsch::Config{
+            emptyList,       releaseExpr,        args.config,
+            args.gcRootsDir, args.flake,         args.fromArgs,
+            args.showTrace,  args.impure,        args.checkCacheStatus,
+            args.nrWorkers,  args.maxMemorySize, args.lockFlags};
+
+        WARN("Expr from: " << releaseExpr);
 
         // test comes here
-        auto analyzer = flutsch::Analyzer(args,config);
+        auto analyzer = flutsch::Analyzer(args, config);
+
+        analyzer.init_root_value();
 
         std::cout << "Analyzer created" << std::endl;
+
+
+
+        test_fn(analyzer, content);
     });
 }
 
-TEST_CASE("Create Analyzer", "[single-file]") {
-    // auto analyzer = flutsch::Analyzer();
-    // pre();
-    auto s = stringWrittentToStream(&pre);
-    REQUIRE(s == "\nAnalyzer created\n");
+TEST_CASE("Create Analyzer", "simple.nix") {
+    init(std::string("simple.nix"),[&](flutsch::Analyzer &test, std::string expected) {
+        REQUIRE(expected == test.print_root_value());
+    });
 }

@@ -47,6 +47,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <queue>
 
 using namespace nix;
 using namespace nlohmann;
@@ -60,8 +61,6 @@ using namespace nlohmann;
 
 namespace flutsch {
 
-typedef std::unordered_map<AttrEntry, ValueIntrospection, AttrEntryHash>
-    FlutschMap;
 static FlutschMap valueMap;
 
 std::string attrPathJoin(std::vector<std::string> path) {
@@ -335,7 +334,7 @@ std::string describe(Value &v) {
     if (v.isList()) {
         return "list";
     }
-    auto repr = showType(v.type());
+    auto repr = showType(v);
     return std::string(repr);
 }
 
@@ -605,31 +604,125 @@ unwrapLambda(nix::Value lambdaOrFunctor, ref<EvalState> state) {
 
 Analyzer::Analyzer(nix::MixEvalArgs &args, flutsch::Config config)
     : state(std::make_shared<EvalState>(args.searchPath,
-                                        openStore(*args.evalStoreUrl))) {
+                                        openStore(*args.evalStoreUrl))),
+      args(args), config(config) {}
+void Analyzer::init_root_value() {
+    Bindings &autoArgs = *args.getAutoArgs(*state);
 
-    // TODO: move to init_root_from_args
-    // We do this to allow for parallel initialization of the root value for unit tests
+    vRoot = [&]() {
+        if (config.flake) {
+            auto [flakeRef, fragment, outputSpec] =
+                parseFlakeRefWithFragmentAndExtendedOutputsSpec(
+                    config.releaseExpr, absPath("."));
+            InstallableFlake flake{
+                {}, state, std::move(flakeRef), fragment, outputSpec,
+                {}, {},    config.lockFlags};
 
-    // Bindings &autoArgs = *args.getAutoArgs(*state);
+            return *flake.toValue(*state).first;
+        } else {
+            return *releaseExprTopLevelValue(*state, autoArgs, config);
+        }
+    }();
 
-    // vRoot = [&]() {
-    //     if (config.flake) {
-    //         auto [flakeRef, fragment, outputSpec] =
-    //             parseFlakeRefWithFragmentAndExtendedOutputsSpec(
-    //                 config.releaseExpr, absPath("."));
-    //         InstallableFlake flake{
-    //             {}, state, std::move(flakeRef), fragment, outputSpec,
-    //             {}, {},    config.lockFlags};
+    if (vRoot.type() != nAttrs) {
+        throw EvalError("Top level attribute is not an attrset");
+    }
+}
 
-    //         return flake.toValue(*state).first;
-    //     } else {
-    //         return releaseExprTopLevelValue(*state, autoArgs, config);
-    //     }
-    // }();
+void Analyzer::init_from_file() {
+    auto a = lookupFileArg(*state, config.releaseExpr);
+    state->evalFile(a, vRoot);
+}
 
-    // if (vRoot->type() != nAttrs) {
-    //     throw EvalError("Top level attribute is not an attrset");
-    // }
+std::string Analyzer::print_root_value() {
+    std::ostringstream oss;
+    vRoot.print(*state,oss);
+    return oss.str();
+}
+
+void Analyzer::bfs_traverse() {
+    std::queue<std::pair<nix::Value, std::string>> queue;
+    queue.push({vRoot, "root"});
+
+    while (!queue.empty()) {
+        auto [current_node, path] = queue.front();
+        queue.pop();
+
+        state->forceValue(current_node, noPos);
+
+        // Print the path and type of the current node
+        std::cout << path << ": " << std::endl;
+        std::cout << describe(current_node) << std::endl;
+
+        // if (test->type() == nAttrs) {
+        // state->forceAttrs(*test, noPos, "error");
+
+        // displayAttrs(test, state);
+
+        if (current_node.type() == nAttrs) {
+            for (auto &i :
+                current_node.attrs->lexicographicOrder(state->symbols)) {
+
+                const std::string &name = state->symbols[i->name];
+                const PosIdx childPos = i->pos;
+
+                nix::Value *value = i->value;
+                // queue.push({*value, path + "." + name});
+
+                try {
+                    bool analyze = true;
+                    state->forceValue(*value, noPos);
+                    if (value->type() == nAttrs) {
+                        Attr *drvPath = value->attrs->get(
+                            state->symbols.create("drvPath"));
+                        if (drvPath != nullptr) {
+                            // Check if drvPath is a string/path and has
+                            // context.
+                            try {
+
+                                state->forceString(
+                                    *drvPath->value, drvPath->pos,
+                                    "error drvPath is not a string");
+                            } catch (nix::Error &e) {
+                                std::cout << "drvPath is not a string"
+                                            << std::endl;
+                            }
+
+                            auto context = drvPath->value->string.context;
+                            if (context != nullptr) {
+                                std::cout
+                                    << "Skipping recursing derivation: "
+                                    << name << std::endl;
+                                analyze = false;
+                            }
+                        }
+                    }
+                    if (startsWithDoubleUnderscore(name)) {
+                        analyze = false;
+                        std::cout
+                            << "Skipping recursing intern attribute: "
+                            << name << std::endl;
+                    }
+
+                    // Dont recurse into derivations? Since they are
+                    // attribute sets from a language perspective. {
+                    // drvPath = "/nix/store/..."; <-context }
+                    if (analyze == true) {
+                        queue.push({*value, path + "." + name});
+                    }
+                    
+                } catch (nix::Error &e) {
+                }
+            }
+        }
+        // else if (current_node.is_array()) {
+        //     int index = 0;
+        //     for (auto& value : current_node) {
+        //         queue.push({value, path + "[" + std::to_string(index++) +
+        //         "]"});
+        //     }
+        // }
+    }
 }
 
 // Introspect the root value
@@ -936,6 +1029,7 @@ void getPositions(MixEvalArgs &args, flutsch::Config const &config) {
                         // Dont recurse into derivations? Since they are
                         // attribute sets from a language perspective. { drvPath
                         // = "/nix/store/..."; <-context }
+                        // But they are "derivations" from a user perspective.
                         if (recurse == true) {
                             recurseValues(curAttrPath, value);
                         }
