@@ -22,6 +22,10 @@ Flutsch was designed as generic expression treewalker with the boobytraps and fo
 
 since it leverages the native C++ Nix evaluator. It catches all kinds of evaluation errors; and more importantly, it can provide introspection without adding more builtins / changing the nix language itself.
 
+## Demo
+
+![Demo](demos/simple.gif)
+
 ## Example
 
 ```nix
